@@ -9,7 +9,7 @@ import {
   STATUS_LABELS,
 } from "@/lib/constants";
 import type { ArtisanDayRow } from "@/lib/database.types";
-import { formatCurrency, formatDateLong, formatHijriDate } from "@/lib/format";
+import { formatCurrency, formatDateLong } from "@/lib/format";
 import { X } from "lucide-react";
 
 interface DayDetailSheetProps {
@@ -19,6 +19,7 @@ interface DayDetailSheetProps {
 
 export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
   const [mounted, setMounted] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -34,6 +35,14 @@ export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
     };
   }, [day]);
 
+  function handleClose() {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+      setIsClosing(false);
+    }, 150);
+  }
+
   if (!mounted || !day) return null;
 
   const profession =
@@ -47,8 +56,8 @@ export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
       <button
         type="button"
         aria-label="إغلاق"
-        onTouchStart={(e) => { e.preventDefault(); onClose(); }}
-        onClick={onClose}
+        onTouchStart={(e) => { e.preventDefault(); handleClose(); }}
+        onClick={handleClose}
         className="absolute inset-0 touch-manipulation bg-black/50"
       />
       <div
@@ -64,15 +73,14 @@ export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
         <div className="max-h-[75vh] overflow-y-auto overscroll-contain px-4 pb-[max(5.5rem,env(safe-area-inset-bottom))] pt-2">
           <div className="mb-4 flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs text-slate-500">{formatHijriDate(day.date)}</p>
               <h3 className="text-lg font-bold text-slate-900">
                 {formatDateLong(day.date)}
               </h3>
             </div>
             <button
               type="button"
-              onTouchStart={(e) => { e.preventDefault(); onClose(); }}
-              onClick={onClose}
+              onTouchStart={(e) => { e.preventDefault(); handleClose(); }}
+              onClick={handleClose}
               className="touch-manipulation flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600 active:bg-slate-200"
             >
               <X className="h-5 w-5" />

@@ -18,13 +18,6 @@ const shortDateFormatter = new Intl.DateTimeFormat("ar-SA", {
   timeZone: "Asia/Riyadh",
 });
 
-const hijriFormatter = new Intl.DateTimeFormat("ar-SA-u-ca-islamic", {
-  day: "numeric",
-  month: "long",
-  year: "numeric",
-  timeZone: "Asia/Riyadh",
-});
-
 const monthYearFormatter = new Intl.DateTimeFormat("ar-SA", {
   month: "long",
   year: "numeric",
@@ -45,10 +38,6 @@ export function formatDate(date: string): string {
 
 export function formatDateLong(date: string): string {
   return gregorianFormatter.format(parseLocalDate(date));
-}
-
-export function formatHijriDate(date: string): string {
-  return hijriFormatter.format(parseLocalDate(date));
 }
 
 export function formatMonthYear(year: number, month: number): string {

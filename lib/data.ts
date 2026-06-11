@@ -14,7 +14,6 @@ export interface DashboardData {
   remainingBalance: number;
   dayStats: DayStats;
   recentPayments: ArtisanPaymentRow[];
-  clientNames: string[];
 }
 
 export async function getAllWorkDays(): Promise<ArtisanDayRow[]> {
@@ -31,13 +30,12 @@ export async function getAllWorkDays(): Promise<ArtisanDayRow[]> {
 }
 
 export async function getDashboardData(): Promise<DashboardData> {
-  const [daysResult, paymentsResult, clientsResult] = await Promise.all([
+  const [daysResult, paymentsResult] = await Promise.all([
     supabase.from("artisan_days").select("*").order("date", { ascending: false }),
     supabase
       .from("artisan_payments")
       .select("*")
       .order("date", { ascending: false }),
-    supabase.from("artisan_days").select("client_name"),
   ]);
 
   if (daysResult.error) {
@@ -58,25 +56,12 @@ export async function getDashboardData(): Promise<DashboardData> {
     totalReceived,
   );
 
-  const paymentClients =
-    (
-      await supabase.from("artisan_payments").select("client_name")
-    ).data?.map((row) => row.client_name) ?? [];
-
-  const dayClients =
-    clientsResult.data?.map((row) => row.client_name) ?? [];
-
-  const clientNames = [...new Set([...dayClients, ...paymentClients])].sort(
-    (a, b) => a.localeCompare(b, "ar"),
-  );
-
   return {
     totalEarned,
     totalReceived,
     remainingBalance,
     dayStats: calculateDayStats(allDays),
     recentPayments: allPayments.slice(0, 5),
-    clientNames,
   };
 }
 

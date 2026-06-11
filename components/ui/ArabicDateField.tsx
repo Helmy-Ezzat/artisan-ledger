@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { getTodayISO } from "@/lib/dates";
-import { formatDateLong, formatHijriDate } from "@/lib/format";
+import { formatDateLong } from "@/lib/format";
 
 interface ArabicDateFieldProps {
   id: string;
@@ -61,7 +61,6 @@ export function ArabicDateField({
       {date ? (
         <div className="rounded-xl bg-slate-50 px-3 py-2 text-xs leading-relaxed text-slate-600">
           <p>{formatDateLong(date)}</p>
-          <p className="mt-0.5 text-slate-500">{formatHijriDate(date)}</p>
         </div>
       ) : null}
     </div>

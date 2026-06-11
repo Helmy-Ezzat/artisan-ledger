@@ -3,14 +3,6 @@ import { Tajawal } from "next/font/google";
 import { ToasterProvider } from "@/components/providers/ToasterProvider";
 import "./globals.css";
 
-// Dev-only touch debugger (no-op in production)
-let TouchDebug: any = null;
-if (process.env.NODE_ENV === "development") {
-  // import dynamically to keep layout as server component in prod
-  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-  TouchDebug = require("@/components/dev/TouchDebug").default;
-}
-
 const tajawal = Tajawal({
   variable: "--font-tajawal",
   subsets: ["arabic", "latin"],
@@ -49,7 +41,6 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-sans text-slate-900">
         {children}
         <ToasterProvider />
-        {TouchDebug ? <TouchDebug /> : null}
       </body>
     </html>
   );

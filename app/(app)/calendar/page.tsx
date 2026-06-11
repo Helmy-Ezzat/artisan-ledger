@@ -1,12 +1,11 @@
+import { Suspense } from "react";
 import { AppHeader } from "@/components/layout/AppHeader";
-import { WorkCalendar } from "@/components/calendar/WorkCalendar";
-import { getAllWorkDays } from "@/lib/data";
+import { CalendarContent } from "@/components/calendar/CalendarContent";
+import { WorkCalendarSkeleton } from "@/components/calendar/WorkCalendarSkeleton";
 
 export const dynamic = "force-dynamic";
 
-export default async function CalendarPage() {
-  const days = await getAllWorkDays();
-
+export default function CalendarPage() {
   return (
     <>
       <AppHeader
@@ -15,7 +14,9 @@ export default async function CalendarPage() {
       />
 
       <main className="mx-auto max-w-lg px-4 py-4 pb-28">
-        <WorkCalendar days={days} />
+        <Suspense fallback={<WorkCalendarSkeleton />}>
+          <CalendarContent />
+        </Suspense>
       </main>
     </>
   );
