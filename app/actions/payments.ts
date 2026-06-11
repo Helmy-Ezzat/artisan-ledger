@@ -1,6 +1,6 @@
 "use server";
 
-import { supabaseServer as supabase } from "@/lib/supabaseServer";
+import { createClient } from "@/lib/supabase";
 import { revalidateApp } from "@/lib/revalidate";
 import { paymentSchema, type PaymentInput } from "@/lib/validations";
 
@@ -42,7 +42,15 @@ export async function createPayment(
 
   const { data } = parsed;
 
+  const supabase = await createClient();
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { success: false, message: "يجب تسجيل الدخول أولاً." };
+  }
+
   const { error } = await supabase.from("artisan_payments").insert({
+    user_id: user.id,
     date: data.date,
     amount: data.amount,
     client_name: data.client_name,

@@ -3,6 +3,7 @@ export type PaymentMethod = "Cash" | "Bank Transfer";
 
 export interface ArtisanDayRow {
   id: string;
+  user_id: string;
   date: string;
   daily_rate: number;
   status: DayStatus;
@@ -14,6 +15,7 @@ export interface ArtisanDayRow {
 
 export interface ArtisanPaymentRow {
   id: string;
+  user_id: string;
   date: string;
   amount: number;
   client_name: string;

@@ -1,6 +1,5 @@
 -- نفّذ هذا الملف في Supabase → SQL Editor
--- يسمح للتطبيق بالقراءة والكتابة عبر مفتاح anon (بدون تسجيل دخول)
--- عند إضافة المصادقة لاحقاً، استبدل هذه السياسات بسياسات مرتبطة بـ auth.uid()
+-- سياسات أمان صارمة لربط كل صف بالمستخدم الذي أنشأه
 
 alter table public.artisan_days enable row level security;
 alter table public.artisan_payments enable row level security;
@@ -9,16 +8,44 @@ alter table public.artisan_payments enable row level security;
 drop policy if exists "artisan_days_all" on public.artisan_days;
 drop policy if exists "artisan_payments_all" on public.artisan_payments;
 
-create policy "artisan_days_all"
+-- سياسات لجدول أيام العمل
+create policy "Users can view their own days"
   on public.artisan_days
-  for all
-  to anon, authenticated
-  using (true)
-  with check (true);
+  for select
+  using (auth.uid() = user_id);
 
-create policy "artisan_payments_all"
+create policy "Users can insert their own days"
+  on public.artisan_days
+  for insert
+  with check (auth.uid() = user_id);
+
+create policy "Users can update their own days"
+  on public.artisan_days
+  for update
+  using (auth.uid() = user_id);
+
+create policy "Users can delete their own days"
+  on public.artisan_days
+  for delete
+  using (auth.uid() = user_id);
+
+-- سياسات لجدول المدفوعات
+create policy "Users can view their own payments"
   on public.artisan_payments
-  for all
-  to anon, authenticated
-  using (true)
-  with check (true);
+  for select
+  using (auth.uid() = user_id);
+
+create policy "Users can insert their own payments"
+  on public.artisan_payments
+  for insert
+  with check (auth.uid() = user_id);
+
+create policy "Users can update their own payments"
+  on public.artisan_payments
+  for update
+  using (auth.uid() = user_id);
+
+create policy "Users can delete their own payments"
+  on public.artisan_payments
+  for delete
+  using (auth.uid() = user_id);

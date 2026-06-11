@@ -6,7 +6,7 @@ import {
   type DayStats,
 } from "@/lib/calculations";
 import type { ArtisanDayRow, ArtisanPaymentRow } from "@/lib/database.types";
-import { supabaseServer as supabase } from "@/lib/supabaseServer";
+import { createClient } from "@/lib/supabase";
 
 export interface DashboardData {
   totalEarned: number;
@@ -17,6 +17,12 @@ export interface DashboardData {
 }
 
 export async function getAllWorkDays(): Promise<ArtisanDayRow[]> {
+  const supabase = await createClient();
+
+  // Get current authenticated user first
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) throw new Error("Unauthorized");
+
   const { data, error } = await supabase
     .from("artisan_days")
     .select("*")
@@ -30,6 +36,11 @@ export async function getAllWorkDays(): Promise<ArtisanDayRow[]> {
 }
 
 export async function getDashboardData(): Promise<DashboardData> {
+  const supabase = await createClient();
+
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) throw new Error("Unauthorized");
+
   const [daysResult, paymentsResult] = await Promise.all([
     supabase.from("artisan_days").select("*").order("date", { ascending: false }),
     supabase
@@ -66,6 +77,10 @@ export async function getDashboardData(): Promise<DashboardData> {
 }
 
 export async function getClientNames(): Promise<string[]> {
+  const supabase = await createClient();
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) throw new Error("Unauthorized");
+
   const [daysResult, paymentsResult] = await Promise.all([
     supabase.from("artisan_days").select("client_name"),
     supabase.from("artisan_payments").select("client_name"),
