@@ -58,18 +58,13 @@ export function UserButton({
           <p className="text-sm font-semibold text-slate-900 leading-tight">
             {displayName}
           </p>
-          {user.email ? (
-            <p className="text-[11px] text-slate-500 truncate max-w-[140px] leading-tight">
-              {user.email}
-            </p>
-          ) : null}
         </div>
 
         {user.user_metadata.avatar_url && !imgError ? (
           <img
             src={user.user_metadata.avatar_url}
             alt="الصورة الشخصية"
-            className="h-10 w-10 rounded-xl border border-slate-200 object-cover shadow-sm"
+            className="h-10 w-10 rounded-full border border-slate-200 object-cover shadow-sm"
             onError={() => setImgError(true)}
           />
         ) : (
