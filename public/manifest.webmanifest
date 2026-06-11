@@ -1,0 +1,12 @@
+{
+  "name": "دفتر حسابات الصنايعي",
+  "short_name": "دفتر الصنايعي",
+  "description": "متابعة أيام العمل والمدفوعات وحساب الرصيد المتبقي.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0d9488",
+  "orientation": "portrait-primary",
+  "lang": "ar",
+  "dir": "rtl"
+}

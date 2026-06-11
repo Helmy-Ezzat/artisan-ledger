@@ -1,0 +1,21 @@
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ??
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error(
+    "Missing Supabase environment variables. Check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.",
+  );
+}
+
+/**
+ * Server-only Supabase client for Server Actions and data fetching.
+ * يفضّل استخدام SUPABASE_SERVICE_ROLE_KEY على الخادم فقط — لا تضعه في كود الواجهة.
+ * بدون service role: نفّذ supabase/rls_policies.sql في لوحة Supabase.
+ */
+export const supabaseServer = createClient(supabaseUrl, supabaseKey, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
