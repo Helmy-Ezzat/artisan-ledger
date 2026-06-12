@@ -10,8 +10,6 @@ import { ClientField } from "@/components/ui/ClientField";
 import { FieldError } from "@/components/ui/FieldError";
 import {
   DAY_STATUSES,
-  PROFESSION_LABELS,
-  PROFESSION_TYPES,
   STATUS_LABELS,
 } from "@/lib/constants";
 import { getTodayISO } from "@/lib/dates";
@@ -119,8 +117,8 @@ export function WorkSessionForm({
             name="daily_rate"
             type="number"
             min="0"
-            step="0.01"
-            inputMode="decimal"
+            step="1"
+            inputMode="numeric"
             placeholder="مثال: 500"
             required
             defaultValue={initialData?.daily_rate}
@@ -157,22 +155,15 @@ export function WorkSessionForm({
             >
               المهنة
             </label>
-            <select
+            <input
               id="profession_type"
               name="profession_type"
+              type="text"
               required
+              placeholder="مثال: سباك، كهربائي، دهان..."
               defaultValue={initialData?.profession_type || ""}
               className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
-            >
-              <option value="" disabled>
-                اختر المهنة
-              </option>
-              {PROFESSION_TYPES.map((profession) => (
-                <option key={profession} value={profession}>
-                  {PROFESSION_LABELS[profession]}
-                </option>
-              ))}
-            </select>
+            />
             <FieldError message={state.fieldErrors?.profession_type} />
           </div>
         </div>

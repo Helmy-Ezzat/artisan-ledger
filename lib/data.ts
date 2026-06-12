@@ -16,6 +16,11 @@ export interface DashboardData {
   recentPayments: ArtisanPaymentRow[];
 }
 
+export interface ReportsData {
+  allWorkDays: ArtisanDayRow[];
+  allPayments: ArtisanPaymentRow[];
+}
+
 export async function getAllWorkDays(): Promise<ArtisanDayRow[]> {
   const supabase = await createClient();
 
@@ -93,4 +98,32 @@ export async function getClientNames(): Promise<string[]> {
   return [...new Set([...dayClients, ...paymentClients])].sort((a, b) =>
     a.localeCompare(b, "ar"),
   );
+}
+
+export async function getReportsData(): Promise<ReportsData> {
+  const supabase = await createClient();
+
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) throw new Error("Unauthorized");
+
+  const [daysResult, paymentsResult] = await Promise.all([
+    supabase.from("artisan_days").select("*").order("date", { ascending: false }),
+    supabase
+      .from("artisan_payments")
+      .select("*")
+      .order("date", { ascending: false }),
+  ]);
+
+  if (daysResult.error) {
+    throw new Error(`تعذّر تحميل أيام العمل: ${daysResult.error.message}`);
+  }
+
+  if (paymentsResult.error) {
+    throw new Error(`تعذّر تحميل المدفوعات: ${paymentsResult.error.message}`);
+  }
+
+  return {
+    allWorkDays: (daysResult.data ?? []) as ArtisanDayRow[],
+    allPayments: (paymentsResult.data ?? []) as ArtisanPaymentRow[],
+  };
 }

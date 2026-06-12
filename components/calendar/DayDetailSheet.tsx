@@ -12,6 +12,7 @@ import type { ArtisanDayRow } from "@/lib/database.types";
 import { formatCurrency, formatDateLong } from "@/lib/format";
 import { X, Edit, Trash2 } from "lucide-react";
 import { WorkSessionForm } from "@/components/forms/WorkSessionForm";
+import { ConfirmDialog } from "@/components/ui/Dialog";
 import { updateWorkSession, deleteWorkSession, type WorkSessionActionState } from "@/app/actions/days";
 import { toast } from "sonner";
 
@@ -24,6 +25,7 @@ export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
   const [mounted, setMounted] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const [isPending, setIsPending] = useState(false);
@@ -49,13 +51,11 @@ export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
     }
   };
 
-
-
-  const handleDelete = async () => {
-    if (!confirm("هل أنت متأكد من حذف يوم العمل هذا؟")) return;
+  const handleDeleteConfirm = async () => {
+    if (!day) return;
     setIsDeleting(true);
     try {
-      const result = await deleteWorkSession(day!.id);
+      const result = await deleteWorkSession(day.id);
       if (result.success) {
         toast.success(result.message);
         onClose();
@@ -64,6 +64,7 @@ export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
       }
     } finally {
       setIsDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -136,7 +137,7 @@ export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
                   </button>
                   <button
                     type="button"
-                    onClick={handleDelete}
+                    onClick={() => setShowDeleteConfirm(true)}
                     disabled={isDeleting}
                     className="touch-manipulation flex h-11 w-11 items-center justify-center rounded-full bg-red-100 text-red-700 active:bg-red-200 disabled:opacity-50"
                   >
@@ -229,6 +230,15 @@ export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
           )}
         </div>
       </div>
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteConfirm}
+        title="حذف يوم العمل"
+        message="هل أنت متأكد من حذف يوم العمل هذا؟"
+        confirmLabel="حذف"
+        isLoading={isDeleting}
+      />
     </div>,
     document.body,
   );

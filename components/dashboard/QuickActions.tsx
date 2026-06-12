@@ -1,20 +1,13 @@
-import { Briefcase, ChevronLeft, HandCoins } from "lucide-react";
+import { Briefcase, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
 const actions = [
   {
     href: "/work",
-    label: "تسجيل يوم عمل",
+    label: "تسجيل يوم عمل أو دفعة",
     icon: Briefcase,
     className:
       "bg-sky-600 text-white shadow-md shadow-sky-600/25 active:bg-sky-700",
-  },
-  {
-    href: "/payment",
-    label: "تسجيل دفعة",
-    icon: HandCoins,
-    className:
-      "bg-emerald-600 text-white shadow-md shadow-emerald-600/25 active:bg-emerald-700",
   },
 ] as const;
 

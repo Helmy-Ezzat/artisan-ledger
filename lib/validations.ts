@@ -2,7 +2,6 @@ import { z } from "zod";
 import {
   DAY_STATUSES,
   PAYMENT_METHODS,
-  PROFESSION_TYPES,
 } from "@/lib/constants";
 
 export const workSessionSchema = z.object({
@@ -11,7 +10,7 @@ export const workSessionSchema = z.object({
     .number({ error: "الأجر اليومي يجب أن يكون رقماً" })
     .positive("الأجر اليومي يجب أن يكون أكبر من صفر"),
   status: z.enum(DAY_STATUSES, { error: "اختر حالة اليوم" }),
-  profession_type: z.enum(PROFESSION_TYPES, { error: "اختر المهنة" }),
+  profession_type: z.string().trim().min(1, "المهنة مطلوبة"),
   client_name: z.string().trim().min(1, "اسم العميل مطلوب"),
   location: z.string().trim().optional(),
   notes: z.string().trim().optional(),

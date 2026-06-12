@@ -112,8 +112,8 @@ export function PaymentForm({
             name="amount"
             type="number"
             min="0"
-            step="0.01"
-            inputMode="decimal"
+            step="1"
+            inputMode="numeric"
             placeholder="مثال: 1000"
             required
             defaultValue={initialData?.amount}

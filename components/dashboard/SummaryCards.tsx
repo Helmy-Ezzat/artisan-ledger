@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useActionState, useEffect } from "react";
+import { useState } from "react";
 import { createPortal } from "react-dom";
 import { formatCurrency, formatDate } from "@/lib/format";
 import type { DayStats } from "@/lib/calculations";
@@ -8,6 +8,7 @@ import type { ArtisanPaymentRow } from "@/lib/database.types";
 import { PAYMENT_METHOD_LABELS } from "@/lib/constants";
 import { CalendarCheck, Coins, Receipt, Edit, Trash2, X } from "lucide-react";
 import { PaymentForm } from "@/components/forms/PaymentForm";
+import { ConfirmDialog } from "@/components/ui/Dialog";
 import { updatePayment, deletePayment, type PaymentActionState } from "@/app/actions/payments";
 import { toast } from "sonner";
 
@@ -62,17 +63,18 @@ export function SummaryCards({
   };
 
   const [editingPayment, setEditingPayment] = useState<ArtisanPaymentRow | null>(null);
+  const [deletePaymentId, setDeletePaymentId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleEdit = (payment: ArtisanPaymentRow) => {
     setEditingPayment(payment);
   };
 
-  const handleDelete = async (paymentId: string) => {
-    if (!confirm("هل أنت متأكد من حذف هذه الدفعة؟")) return;
+  const handleDeleteConfirm = async () => {
+    if (!deletePaymentId) return;
     setIsDeleting(true);
     try {
-      const result = await deletePayment(paymentId);
+      const result = await deletePayment(deletePaymentId);
       if (result.success) {
         toast.success(result.message);
       } else {
@@ -80,6 +82,7 @@ export function SummaryCards({
       }
     } finally {
       setIsDeleting(false);
+      setDeletePaymentId(null);
     }
   };
 
@@ -97,29 +100,48 @@ export function SummaryCards({
             <h2 className="text-base font-semibold text-slate-900">المالية</h2>
           </div>
           <div className="grid grid-cols-3 gap-2">
-            {financialItems.map((item) => {
-              const value = financialValues[item.key];
-              const isNegative = item.key === "balance" && value < 0;
+          {financialItems.map((item) => {
+            let value = 0;
+            let displayValue = "";
+            let extraClasses = "";
+            
+            if (item.key === "earned") value = totalEarned;
+            else if (item.key === "received") value = totalReceived;
+            else value = remainingBalance;
 
-              return (
-                <div
-                  key={item.key}
-                  className={`rounded-xl px-2 py-3 text-center ${item.bg}`}
+            if (item.key === "balance") {
+              if (value > 0) {
+                displayValue = formatCurrency(value);
+                extraClasses = "text-emerald-700";
+              } else if (value < 0) {
+                displayValue = formatCurrency(Math.abs(value));
+                extraClasses = "text-rose-700";
+              } else {
+                displayValue = formatCurrency(0);
+              }
+            } else {
+              displayValue = formatCurrency(value);
+            }
+
+            return (
+              <div
+                key={item.key}
+                className={`rounded-xl px-2 py-3 text-center ${item.bg}`}
+              >
+                <p className={`text-[11px] font-bold leading-tight ${item.color}`}>
+                  {item.key === "balance" 
+                    ? (value > 0 ? "باقي ليا" : value < 0 ? "لقد تجاوزت" : "باقي ليا") 
+                    : item.label}
+                </p>
+                <p
+                  className={`mt-1 text-sm font-extrabold leading-tight ${extraClasses || (value < 0 ? "text-red-600" : "text-slate-900")}`}
                 >
-                  <p className={`text-[11px] font-bold leading-tight ${item.color}`}>
-                    {item.label}
-                  </p>
-                  <p
-                    className={`mt-1 text-sm font-extrabold leading-tight ${
-                      isNegative ? "text-red-600" : "text-slate-900"
-                    }`}
-                  >
-                    {formatCurrency(value)}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
+                  {item.key === "balance" && value < 0 ? `${displayValue} زائد` : displayValue}
+                </p>
+              </div>
+            );
+          })}
+        </div>
         </div>
 
         <div className="border-t border-slate-100" />
@@ -192,7 +214,7 @@ export function SummaryCards({
                           <Edit className="h-3.5 w-3.5" />
                         </button>
                         <button
-                          onClick={() => handleDelete(payment.id)}
+                          onClick={() => setDeletePaymentId(payment.id)}
                           disabled={isDeleting}
                           className="h-7 w-7 flex items-center justify-center rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100"
                         >
@@ -233,6 +255,15 @@ export function SummaryCards({
           </div>,
           document.body,
         )}
+      <ConfirmDialog
+        isOpen={!!deletePaymentId}
+        onClose={() => setDeletePaymentId(null)}
+        onConfirm={handleDeleteConfirm}
+        title="حذف الدفعة"
+        message="هل أنت متأكد من حذف هذه الدفعة؟"
+        confirmLabel="حذف"
+        isLoading={isDeleting}
+      />
     </>
   );
 }

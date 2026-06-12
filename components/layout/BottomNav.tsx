@@ -1,7 +1,7 @@
 "use client";
 
 import { NAV_ITEMS } from "@/lib/constants";
-import { Briefcase, CalendarDays, HandCoins, LayoutDashboard, Settings } from "lucide-react";
+import { Briefcase, CalendarDays, LayoutDashboard, Settings, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -9,7 +9,7 @@ const icons = {
   home: LayoutDashboard,
   calendar: CalendarDays,
   work: Briefcase,
-  payment: HandCoins,
+  reports: BarChart3,
   settings: Settings,
 };
 

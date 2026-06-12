@@ -68,7 +68,7 @@ export const WEEKDAY_LABELS = ["سبت", "أحد", "إثن", "ثلا", "أرب",
 export const NAV_ITEMS = [
   { href: "/", label: "الرئيسية", icon: "home" as const },
   { href: "/calendar", label: "التقويم", icon: "calendar" as const },
-  { href: "/work", label: "يوم عمل", icon: "work" as const },
-  { href: "/payment", label: "دفعة", icon: "payment" as const },
+  { href: "/work", label: "تسجيل", icon: "work" as const },
+  { href: "/reports", label: "التقارير", icon: "reports" as const },
   { href: "/settings", label: "الإعدادات", icon: "settings" as const },
 ] as const;
