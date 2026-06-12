@@ -31,6 +31,7 @@ export async function getAllWorkDays(): Promise<ArtisanDayRow[]> {
   const { data, error } = await supabase
     .from("artisan_days")
     .select("*")
+    .eq("user_id", user.id)
     .order("date", { ascending: false });
 
   if (error) {
@@ -47,10 +48,15 @@ export async function getDashboardData(): Promise<DashboardData> {
   if (userError || !user) throw new Error("Unauthorized");
 
   const [daysResult, paymentsResult] = await Promise.all([
-    supabase.from("artisan_days").select("*").order("date", { ascending: false }),
+    supabase
+      .from("artisan_days")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("date", { ascending: false }),
     supabase
       .from("artisan_payments")
       .select("*")
+      .eq("user_id", user.id)
       .order("date", { ascending: false }),
   ]);
 
@@ -87,8 +93,14 @@ export async function getClientNames(): Promise<string[]> {
   if (userError || !user) throw new Error("Unauthorized");
 
   const [daysResult, paymentsResult] = await Promise.all([
-    supabase.from("artisan_days").select("client_name"),
-    supabase.from("artisan_payments").select("client_name"),
+    supabase
+      .from("artisan_days")
+      .select("client_name")
+      .eq("user_id", user.id),
+    supabase
+      .from("artisan_payments")
+      .select("client_name")
+      .eq("user_id", user.id),
   ]);
 
   const dayClients = daysResult.data?.map((row) => row.client_name) ?? [];
@@ -107,10 +119,15 @@ export async function getReportsData(): Promise<ReportsData> {
   if (userError || !user) throw new Error("Unauthorized");
 
   const [daysResult, paymentsResult] = await Promise.all([
-    supabase.from("artisan_days").select("*").order("date", { ascending: false }),
+    supabase
+      .from("artisan_days")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("date", { ascending: false }),
     supabase
       .from("artisan_payments")
       .select("*")
+      .eq("user_id", user.id)
       .order("date", { ascending: false }),
   ]);
 
