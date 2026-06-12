@@ -104,7 +104,6 @@ export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
       <button
         type="button"
         aria-label="إغلاق"
-        onTouchStart={(e) => { e.preventDefault(); handleClose(); }}
         onClick={handleClose}
         className="absolute inset-0 touch-manipulation bg-black/50"
       />

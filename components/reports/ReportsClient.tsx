@@ -224,12 +224,12 @@ export function ReportsClient({
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="flex items-center justify-between rounded-lg bg-sky-100 px-2 py-1.5">
-                    <span className="text-sky-700 text-xs">الإيرادات</span>
-                    <span className="text-sky-700 font-semibold">{formatCurrency(stat.earned)}</span>
+                    <span className="text-sky-700 text-xs font-semibold">اللي ليا</span>
+                    <span className="text-sky-700 font-bold">{formatCurrency(stat.earned)}</span>
                   </div>
                   <div className="flex items-center justify-between rounded-lg bg-emerald-100 px-2 py-1.5">
-                    <span className="text-emerald-700 text-xs">المدفوعات</span>
-                    <span className="text-emerald-700 font-semibold">{formatCurrency(stat.received)}</span>
+                    <span className="text-emerald-700 text-xs font-semibold">وصلني</span>
+                    <span className="text-emerald-700 font-bold">{formatCurrency(stat.received)}</span>
                   </div>
                 </div>
               </div>

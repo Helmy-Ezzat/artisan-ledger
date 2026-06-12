@@ -37,24 +37,33 @@ export function WorkCalendar({ days }: WorkCalendarProps) {
   const cells = useMemo(() => buildMonthGrid(year, month), [year, month]);
   const todayKey = getTodayISO();
 
-  function goToPrevMonth() {
+  function goToPrevMonth(e: React.MouseEvent | React.TouchEvent) {
+    e.preventDefault();
+    e.stopPropagation();
     setView(({ year: y, month: m }) =>
       m === 0 ? { year: y - 1, month: 11 } : { year: y, month: m - 1 },
     );
   }
 
-  function goToNextMonth() {
+  function goToNextMonth(e: React.MouseEvent | React.TouchEvent) {
+    e.preventDefault();
+    e.stopPropagation();
     setView(({ year: y, month: m }) =>
       m === 11 ? { year: y + 1, month: 0 } : { year: y, month: m + 1 },
     );
   }
 
-  function goToToday() {
+  function goToToday(e: React.MouseEvent | React.TouchEvent) {
+    e.preventDefault();
+    e.stopPropagation();
     setView({ year: now.getFullYear(), month: now.getMonth() });
   }
 
   function openDay(record: ArtisanDayRow) {
-    setSelectedDay(record);
+    // Add a small delay before opening the sheet
+    setTimeout(() => {
+      setSelectedDay(record);
+    }, 150);
   }
 
   return (
@@ -63,7 +72,7 @@ export function WorkCalendar({ days }: WorkCalendarProps) {
         <div className="mb-3 flex items-center justify-between gap-2">
           <button
             type="button"
-            onTouchStart={(e) => { e.preventDefault(); goToPrevMonth(); }}
+            onTouchStart={goToPrevMonth}
             onClick={goToPrevMonth}
             className="touch-manipulation flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700 active:bg-slate-200"
             aria-label="الشهر السابق"
@@ -77,7 +86,7 @@ export function WorkCalendar({ days }: WorkCalendarProps) {
             </p>
             <button
               type="button"
-              onTouchStart={(e) => { e.preventDefault(); goToToday(); }}
+              onTouchStart={goToToday}
               onClick={goToToday}
               className="touch-manipulation mt-1 min-h-[32px] px-2 text-xs font-bold text-teal-600 active:text-teal-800"
             >
@@ -87,7 +96,7 @@ export function WorkCalendar({ days }: WorkCalendarProps) {
 
           <button
             type="button"
-            onTouchStart={(e) => { e.preventDefault(); goToNextMonth(); }}
+            onTouchStart={goToNextMonth}
             onClick={goToNextMonth}
             className="touch-manipulation flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700 active:bg-slate-200"
             aria-label="الشهر التالي"
@@ -118,7 +127,6 @@ export function WorkCalendar({ days }: WorkCalendarProps) {
                 <button
                   key={cell.dateKey}
                   type="button"
-                  onTouchStart={(e) => { e.preventDefault(); openDay(record); }}
                   onClick={() => openDay(record)}
                   className={`touch-manipulation relative flex min-h-[44px] flex-col items-center justify-center rounded-xl text-sm font-bold text-white shadow-sm active:scale-95 ${statusColor?.bg} ${
                     !cell.inMonth ? "opacity-60" : ""

@@ -55,7 +55,7 @@ export function Dialog({
           </button>
         </div>
         <div className="mb-5">{children}</div>
-        {actions && <div className="flex gap-2 justify-end">{actions}</div>}
+        {actions && <div className="flex gap-2 justify-center">{actions}</div>}
       </div>
     </div>,
     document.body,

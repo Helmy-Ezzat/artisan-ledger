@@ -190,8 +190,8 @@ export function SummaryCards({
                   key={payment.id}
                   className="rounded-xl border border-slate-100 bg-slate-50 p-3"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
+                  <div className="flex items-start gap-3">
+                    <div className="min-w-0 flex-1">
                       <p className="truncate font-medium text-slate-900">
                         {payment.client_name}
                       </p>
@@ -202,23 +202,23 @@ export function SummaryCards({
                         {PAYMENT_METHOD_LABELS[payment.payment_method]}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <p className="shrink-0 font-semibold text-emerald-700">
+                    <div className="flex shrink-0 flex-col items-end gap-2">
+                      <p className="font-semibold text-emerald-700 whitespace-nowrap">
                         {formatCurrency(payment.amount)}
                       </p>
                       <div className="flex gap-1">
                         <button
                           onClick={() => handleEdit(payment)}
-                          className="h-7 w-7 flex items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                          className="h-8 w-8 flex items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 active:scale-95 transition-transform"
                         >
-                          <Edit className="h-3.5 w-3.5" />
+                          <Edit className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => setDeletePaymentId(payment.id)}
                           disabled={isDeleting}
-                          className="h-7 w-7 flex items-center justify-center rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100"
+                          className="h-8 w-8 flex items-center justify-center rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 active:scale-95 transition-transform disabled:opacity-50"
                         >
-                          <Trash2 className="h-3.5 w-3.5" />
+                          <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
                     </div>
