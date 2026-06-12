@@ -1,9 +1,12 @@
 import { SummaryCards } from "@/components/dashboard/SummaryCards";
 import { QuickActions } from "@/components/dashboard/QuickActions";
-import { getDashboardData } from "@/lib/data";
+import { getDashboardData, getClientNames } from "@/lib/data";
 
 export async function DashboardContent() {
-  const dashboard = await getDashboardData();
+  const [dashboard, clientNames] = await Promise.all([
+    getDashboardData(),
+    getClientNames(),
+  ]);
   return (
     <>
       <SummaryCards
@@ -12,6 +15,7 @@ export async function DashboardContent() {
         remainingBalance={dashboard.remainingBalance}
         stats={dashboard.dayStats}
         recentPayments={dashboard.recentPayments}
+        clientNames={clientNames}
       />
       <QuickActions />
     </>

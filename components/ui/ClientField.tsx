@@ -9,6 +9,7 @@ interface ClientFieldProps {
   onModeChange: (custom: boolean) => void;
   error?: string;
   accent?: "sky" | "emerald";
+  initialValue?: string;
 }
 
 const accentStyles = {
@@ -30,6 +31,7 @@ export function ClientField({
   onModeChange,
   error,
   accent = "sky",
+  initialValue
 }: ClientFieldProps) {
   const id = useId();
   const styles = accentStyles[accent];
@@ -70,6 +72,7 @@ export function ClientField({
           placeholder="اكتب اسم العميل"
           required
           autoComplete="off"
+          defaultValue={initialValue}
           className={inputClass}
         />
       ) : (
@@ -77,7 +80,7 @@ export function ClientField({
           id={id}
           name="client_name"
           required
-          defaultValue=""
+          defaultValue={initialValue || ""}
           className={`${inputClass} bg-white text-base`}
         >
           <option value="" disabled>

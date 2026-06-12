@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   createWorkSession,
   type WorkSessionActionState,
@@ -17,36 +17,83 @@ import {
 import { getTodayISO } from "@/lib/dates";
 import { toast } from "sonner";
 
-const initialState: WorkSessionActionState = {
-  success: false,
-  message: "",
-};
-
 interface WorkSessionFormProps {
-  clientNames: string[];
+  clientNames?: string[];
+  action?: (formData: FormData) => Promise<WorkSessionActionState>;
+  isPending?: boolean;
+  initialData?: {
+    date: string;
+    daily_rate: number;
+    status: string;
+    profession_type: string;
+    client_name: string;
+    location?: string;
+    notes?: string;
+  };
+  submitLabel?: string;
 }
 
-export function WorkSessionForm({ clientNames }: WorkSessionFormProps) {
-  const [state, formAction, isPending] = useActionState(
-    createWorkSession,
-    initialState,
-  );
+export function WorkSessionForm({ 
+  clientNames = [], 
+  action,
+  isPending,
+  initialData,
+  submitLabel
+}: WorkSessionFormProps) {
+  const [state, setState] = useState<WorkSessionActionState>({
+    success: false,
+    message: "",
+  });
+  const [localPending, setLocalPending] = useState(false);
+  const pending = isPending ?? localPending;
+  
+  const handleSubmit = async (formData: FormData) => {
+    setLocalPending(true);
+    try {
+      let result;
+      if (action) {
+        result = await action(formData);
+      } else {
+        result = await createWorkSession(state, formData);
+      }
+      setState(result);
+      if (result.success) {
+        toast.success(result.message);
+      } else if (result.message) {
+        toast.error(result.message);
+      }
+    } catch (e) {
+      setState({
+        success: false,
+        message: "حدث خطأ غير متوقع",
+      });
+    } finally {
+      setLocalPending(false);
+    }
+  };
+  
   const [useCustomClient, setUseCustomClient] = useState(
-    clientNames.length === 0,
+    clientNames.length === 0 || !clientNames.includes(initialData?.client_name || ""),
   );
   const [formKey, setFormKey] = useState(0);
 
   useEffect(() => {
-    if (state.success) {
-      toast.success(state.message);
+    if (!action && state.success) {
       setUseCustomClient(clientNames.length === 0);
       setFormKey((key) => key + 1);
     }
-  }, [state.success, state.message, clientNames.length]);
+  }, [action, state.success, state.message, clientNames.length]);
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <form key={formKey} action={formAction} className="space-y-4">
+      <form
+        key={formKey}
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit(new FormData(e.target as HTMLFormElement));
+        }}
+        className="space-y-4"
+      >
         <div>
           <label htmlFor="date" className="mb-1.5 block text-sm font-medium text-slate-700">
             التاريخ
@@ -54,7 +101,7 @@ export function WorkSessionForm({ clientNames }: WorkSessionFormProps) {
           <ArabicDateField
             id="date"
             name="date"
-            defaultValue={getTodayISO()}
+            defaultValue={initialData?.date || getTodayISO()}
             accent="sky"
           />
           <FieldError message={state.fieldErrors?.date} />
@@ -76,6 +123,7 @@ export function WorkSessionForm({ clientNames }: WorkSessionFormProps) {
             inputMode="decimal"
             placeholder="مثال: 500"
             required
+            defaultValue={initialData?.daily_rate}
             className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
           />
           <FieldError message={state.fieldErrors?.daily_rate} />
@@ -89,7 +137,7 @@ export function WorkSessionForm({ clientNames }: WorkSessionFormProps) {
             <select
               id="status"
               name="status"
-              defaultValue="Full Day"
+              defaultValue={initialData?.status || "Full Day"}
               required
               className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
             >
@@ -113,7 +161,7 @@ export function WorkSessionForm({ clientNames }: WorkSessionFormProps) {
               id="profession_type"
               name="profession_type"
               required
-              defaultValue=""
+              defaultValue={initialData?.profession_type || ""}
               className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
             >
               <option value="" disabled>
@@ -135,6 +183,7 @@ export function WorkSessionForm({ clientNames }: WorkSessionFormProps) {
           onModeChange={setUseCustomClient}
           error={state.fieldErrors?.client_name}
           accent="sky"
+          initialValue={initialData?.client_name}
         />
 
         <div>
@@ -146,6 +195,7 @@ export function WorkSessionForm({ clientNames }: WorkSessionFormProps) {
             name="location"
             type="text"
             placeholder="الحي أو موقع العمل"
+            defaultValue={initialData?.location}
             className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
           />
           <FieldError message={state.fieldErrors?.location} />
@@ -160,12 +210,13 @@ export function WorkSessionForm({ clientNames }: WorkSessionFormProps) {
             name="notes"
             rows={3}
             placeholder="تفاصيل إضافية (اختياري)"
+            defaultValue={initialData?.notes}
             className="w-full resize-none rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
           />
           <FieldError message={state.fieldErrors?.notes} />
         </div>
 
-        {!state.success && state.message ? (
+        {state.message && !state.success ? (
           <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">
             {state.message}
           </p>
@@ -173,10 +224,10 @@ export function WorkSessionForm({ clientNames }: WorkSessionFormProps) {
 
         <button
           type="submit"
-          disabled={isPending}
+          disabled={pending}
           className="touch-manipulation w-full min-h-[52px] rounded-xl bg-sky-600 px-4 py-3.5 text-base font-bold text-white transition active:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isPending ? "جاري الحفظ..." : "حفظ يوم العمل"}
+          {pending ? "جاري الحفظ..." : submitLabel || "حفظ يوم عمل"}
         </button>
       </form>
     </section>

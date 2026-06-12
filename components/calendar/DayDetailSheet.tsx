@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useActionState } from "react";
 import { createPortal } from "react-dom";
 import { getDayEarning } from "@/lib/calculations";
 import {
@@ -10,7 +10,10 @@ import {
 } from "@/lib/constants";
 import type { ArtisanDayRow } from "@/lib/database.types";
 import { formatCurrency, formatDateLong } from "@/lib/format";
-import { X } from "lucide-react";
+import { X, Edit, Trash2 } from "lucide-react";
+import { WorkSessionForm } from "@/components/forms/WorkSessionForm";
+import { updateWorkSession, deleteWorkSession, type WorkSessionActionState } from "@/app/actions/days";
+import { toast } from "sonner";
 
 interface DayDetailSheetProps {
   day: ArtisanDayRow | null;
@@ -20,6 +23,49 @@ interface DayDetailSheetProps {
 export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
   const [mounted, setMounted] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const [isPending, setIsPending] = useState(false);
+  const [localState, setLocalState] = useState<WorkSessionActionState>({
+    success: false,
+    message: ""
+  });
+  
+  const handleUpdate = async (formData: FormData) => {
+    setIsPending(true);
+    try {
+      const result = await updateWorkSession(day!.id, localState, formData);
+      setLocalState(result);
+      if (result.success) {
+        toast.success(result.message);
+        setIsEditing(false);
+      } else if (result.message) {
+        toast.error(result.message);
+      }
+      return result;
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+
+
+  const handleDelete = async () => {
+    if (!confirm("هل أنت متأكد من حذف يوم العمل هذا؟")) return;
+    setIsDeleting(true);
+    try {
+      const result = await deleteWorkSession(day!.id);
+      if (result.success) {
+        toast.success(result.message);
+        onClose();
+      } else {
+        toast.error(result.message);
+      }
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -40,6 +86,7 @@ export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
     setTimeout(() => {
       onClose();
       setIsClosing(false);
+      setIsEditing(false);
     }, 150);
   }
 
@@ -74,73 +121,112 @@ export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
           <div className="mb-4 flex items-start justify-between gap-3">
             <div>
               <h3 className="text-lg font-bold text-slate-900">
-                {formatDateLong(day.date)}
+                {isEditing ? "تعديل يوم العمل" : formatDateLong(day.date)}
               </h3>
             </div>
-            <button
-              type="button"
-              onTouchStart={(e) => { e.preventDefault(); handleClose(); }}
-              onClick={handleClose}
-              className="touch-manipulation flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600 active:bg-slate-200"
-            >
-              <X className="h-5 w-5" />
-            </button>
+            <div className="flex gap-2">
+              {!isEditing ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(true)}
+                    className="touch-manipulation flex h-11 w-11 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 active:bg-emerald-200"
+                  >
+                    <Edit className="h-5 w-5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="touch-manipulation flex h-11 w-11 items-center justify-center rounded-full bg-red-100 text-red-700 active:bg-red-200 disabled:opacity-50"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className="touch-manipulation flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600 active:bg-slate-200"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              )}
+            </div>
           </div>
 
-          <div className="space-y-2.5">
-            <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-3">
-              <span className="text-sm text-slate-500">الحالة</span>
-              <span className={`text-sm font-semibold ${colors.text}`}>
-                {STATUS_LABELS[day.status]}
-              </span>
+          {isEditing ? (
+            <div className="mb-6">
+              <WorkSessionForm 
+                action={handleUpdate} 
+                isPending={isPending}
+                initialData={{
+                  date: day.date,
+                  daily_rate: day.daily_rate,
+                  status: day.status,
+                  profession_type: day.profession_type,
+                  client_name: day.client_name,
+                  location: day.location ?? undefined,
+                  notes: day.notes ?? undefined
+                }}
+              />
             </div>
-
-            <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-3">
-              <span className="text-sm text-slate-500">الأجر</span>
-              <span className="text-sm font-bold text-slate-900">
-                {formatCurrency(earning)}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-3">
-              <span className="text-sm text-slate-500">العميل</span>
-              <span className="text-sm font-semibold text-slate-900">
-                {day.client_name}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-3">
-              <span className="text-sm text-slate-500">المهنة</span>
-              <span className="text-sm font-semibold text-slate-900">
-                {profession}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-3">
-              <span className="text-sm text-slate-500">الأجر اليومي</span>
-              <span className="text-sm font-semibold text-slate-900">
-                {formatCurrency(day.daily_rate)}
-              </span>
-            </div>
-
-            {day.location ? (
-              <div className="rounded-xl bg-slate-50 px-3 py-3">
-                <p className="mb-1 text-sm text-slate-500">الموقع</p>
-                <p className="text-sm font-semibold text-slate-900">
-                  {day.location}
-                </p>
+          ) : (
+            <div className="space-y-2.5">
+              <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-3">
+                <span className="text-sm text-slate-500">الحالة</span>
+                <span className={`text-sm font-semibold ${colors.text}`}>
+                  {STATUS_LABELS[day.status]}
+                </span>
               </div>
-            ) : null}
 
-            {day.notes ? (
-              <div className="rounded-xl bg-amber-50 px-3 py-3">
-                <p className="mb-1 text-sm font-medium text-amber-800">ملاحظات</p>
-                <p className="text-sm leading-relaxed text-amber-900">
-                  {day.notes}
-                </p>
+              <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-3">
+                <span className="text-sm text-slate-500">الأجر</span>
+                <span className="text-sm font-bold text-slate-900">
+                  {formatCurrency(earning)}
+                </span>
               </div>
-            ) : null}
-          </div>
+
+              <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-3">
+                <span className="text-sm text-slate-500">العميل</span>
+                <span className="text-sm font-semibold text-slate-900">
+                  {day.client_name}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-3">
+                <span className="text-sm text-slate-500">المهنة</span>
+                <span className="text-sm font-semibold text-slate-900">
+                  {profession}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-3">
+                <span className="text-sm text-slate-500">الأجر اليومي</span>
+                <span className="text-sm font-semibold text-slate-900">
+                  {formatCurrency(day.daily_rate)}
+                </span>
+              </div>
+
+              {day.location ? (
+                <div className="rounded-xl bg-slate-50 px-3 py-3">
+                  <p className="mb-1 text-sm text-slate-500">الموقع</p>
+                  <p className="text-sm font-semibold text-slate-900">
+                    {day.location}
+                  </p>
+                </div>
+              ) : null}
+
+              {day.notes ? (
+                <div className="rounded-xl bg-amber-50 px-3 py-3">
+                  <p className="mb-1 text-sm font-medium text-amber-800">ملاحظات</p>
+                  <p className="text-sm leading-relaxed text-amber-900">
+                    {day.notes}
+                  </p>
+                </div>
+              ) : null}
+            </div>
+          )}
         </div>
       </div>
     </div>,
