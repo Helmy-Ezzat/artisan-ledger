@@ -23,6 +23,16 @@ export interface ArtisanPaymentRow {
   notes: string | null;
 }
 
+export interface ArchivedClientRow {
+  id: string;
+  user_id: string;
+  client_name: string;
+  archived_at: string;
+  final_payment_id: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -36,6 +46,16 @@ export interface Database {
         Row: ArtisanPaymentRow;
         Insert: Omit<ArtisanPaymentRow, "id"> & { id?: string };
         Update: Partial<ArtisanPaymentRow>;
+        Relationships: [];
+      };
+      archived_clients: {
+        Row: ArchivedClientRow;
+        Insert: Omit<ArchivedClientRow, "id" | "created_at" | "archived_at"> & { 
+          id?: string;
+          created_at?: string;
+          archived_at?: string;
+        };
+        Update: Partial<ArchivedClientRow>;
         Relationships: [];
       };
     };

@@ -70,5 +70,6 @@ export const NAV_ITEMS = [
   { href: "/calendar", label: "التقويم", icon: "calendar" as const },
   { href: "/work", label: "تسجيل", icon: "work" as const },
   { href: "/reports", label: "التقارير", icon: "reports" as const },
+  { href: "/archive", label: "الأرشيف", icon: "archive" as const },
   { href: "/settings", label: "الإعدادات", icon: "settings" as const },
 ] as const;

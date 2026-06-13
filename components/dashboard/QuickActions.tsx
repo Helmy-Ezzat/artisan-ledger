@@ -1,4 +1,4 @@
-import { Briefcase, ChevronLeft } from "lucide-react";
+import { Briefcase, ChevronLeft, HandCoins } from "lucide-react";
 import Link from "next/link";
 
 const actions = [
@@ -8,6 +8,13 @@ const actions = [
     icon: Briefcase,
     className:
       "bg-sky-600 text-white shadow-md shadow-sky-600/25 active:bg-sky-700",
+  },
+  {
+    href: "/settle",
+    label: "تصفية حساب عميل",
+    icon: HandCoins,
+    className:
+      "bg-rose-600 text-white shadow-md shadow-rose-600/25 active:bg-rose-700",
   },
 ] as const;
 

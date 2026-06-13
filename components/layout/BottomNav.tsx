@@ -1,7 +1,7 @@
 "use client";
 
 import { NAV_ITEMS } from "@/lib/constants";
-import { Briefcase, CalendarDays, LayoutDashboard, Settings, BarChart3 } from "lucide-react";
+import { Briefcase, CalendarDays, LayoutDashboard, Settings, BarChart3, Archive } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -10,6 +10,7 @@ const icons = {
   calendar: CalendarDays,
   work: Briefcase,
   reports: BarChart3,
+  archive: Archive,
   settings: Settings,
 };
 
@@ -18,7 +19,7 @@ export function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto grid max-w-lg grid-cols-5 px-1 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2">
+      <div className="mx-auto grid max-w-lg grid-cols-6 px-1 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2">
         {NAV_ITEMS.map((item) => {
           const Icon = icons[item.icon];
           const isActive =
