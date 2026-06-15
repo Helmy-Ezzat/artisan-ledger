@@ -170,33 +170,7 @@ export function ReportsClient({
         </div>
       </section>
 
-      {/* Summary Cards */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <div className="flex items-center gap-2 mb-4">
-          <Coins className="h-5 w-5 text-emerald-600" />
-          <h3 className="font-semibold text-slate-900">الملخص</h3>
-        </div>
-        <div className="grid grid-cols-3 gap-2">
-          <div className="rounded-xl bg-sky-50 px-2 py-3 text-center">
-            <p className="text-[11px] font-bold leading-tight text-sky-600">اللي ليا</p>
-            <p className="mt-1 text-sm font-extrabold leading-tight text-slate-900">
-              {formatCurrency(totalEarned)}
-            </p>
-          </div>
-          <div className="rounded-xl bg-emerald-50 px-2 py-3 text-center">
-            <p className="text-[11px] font-bold leading-tight text-emerald-600">وصلني</p>
-            <p className="mt-1 text-sm font-extrabold leading-tight text-slate-900">
-              {formatCurrency(totalReceived)}
-            </p>
-          </div>
-          <div className="rounded-xl bg-amber-50 px-2 py-3 text-center">
-            <p className="text-[11px] font-bold leading-tight text-amber-600">باقي ليا</p>
-            <p className={`mt-1 text-sm font-extrabold leading-tight ${remainingBalance < 0 ? "text-red-600" : "text-slate-900"}`}>
-              {formatCurrency(remainingBalance)}
-            </p>
-          </div>
-        </div>
-      </section>
+      {/* الملخص محذوف بناءً على طلب المستخدم - يبقى الفلتر والإحصاءات الشهرية فقط */}
 
       {/* Monthly Stats */}
       {monthlyStats.length > 0 ? (
@@ -224,7 +198,7 @@ export function ReportsClient({
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="flex items-center justify-between rounded-lg bg-sky-100 px-2 py-1.5">
-                    <span className="text-sky-700 text-xs font-semibold">اللي ليا</span>
+                    <span className="text-sky-700 text-xs font-semibold">المستحقات</span>
                     <span className="text-sky-700 font-bold">{formatCurrency(stat.earned)}</span>
                   </div>
                   <div className="flex items-center justify-between rounded-lg bg-emerald-100 px-2 py-1.5">

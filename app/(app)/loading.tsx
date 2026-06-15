@@ -1,9 +1,9 @@
-import { AppHeader } from "@/components/layout/AppHeader";
+import { AppHeaderServer } from "@/components/layout/AppHeaderServer";
 
 export default function Loading() {
   return (
     <>
-      <AppHeader
+      <AppHeaderServer
         title="جارِ التحميل..."
         subtitle=""
       />

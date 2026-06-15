@@ -24,6 +24,7 @@ interface PaymentFormProps {
     notes?: string;
   };
   submitLabel?: string;
+  onSuccess?: () => void;
 }
 
 export function PaymentForm({ 
@@ -31,7 +32,8 @@ export function PaymentForm({
   action,
   isPending,
   initialData,
-  submitLabel
+  submitLabel,
+  onSuccess
 }: PaymentFormProps) {
   const [state, setState] = useState<PaymentActionState>({
     success: false,
@@ -52,6 +54,7 @@ export function PaymentForm({
       setState(result);
       if (result.success) {
         toast.success(result.message);
+        onSuccess?.();
       } else if (result.message) {
         toast.error(result.message);
       }

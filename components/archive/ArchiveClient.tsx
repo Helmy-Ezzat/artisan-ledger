@@ -98,7 +98,7 @@ export function ArchiveClient({ client }: ArchiveClientProps) {
               {/* Stats Grid */}
               <div className="grid grid-cols-2 gap-2">
                 <div className="rounded-xl bg-white px-3 py-2.5 border border-slate-100">
-                  <p className="text-xs text-slate-500 mb-1">اللي ليا</p>
+                  <p className="text-xs text-slate-500 mb-1">المستحقات</p>
                   <p className="text-base font-bold text-sky-700">
                     {formatCurrency(stats.totalEarned)}
                   </p>

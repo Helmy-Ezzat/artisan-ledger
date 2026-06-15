@@ -29,6 +29,8 @@ interface WorkSessionFormProps {
     notes?: string;
   };
   submitLabel?: string;
+  onSuccess?: () => void;
+  showWrapper?: boolean;
 }
 
 export function WorkSessionForm({ 
@@ -36,7 +38,9 @@ export function WorkSessionForm({
   action,
   isPending,
   initialData,
-  submitLabel
+  submitLabel,
+  onSuccess,
+  showWrapper = true
 }: WorkSessionFormProps) {
   const [state, setState] = useState<WorkSessionActionState>({
     success: false,
@@ -57,6 +61,7 @@ export function WorkSessionForm({
       setState(result);
       if (result.success) {
         toast.success(result.message);
+        onSuccess?.();
       } else if (result.message) {
         toast.error(result.message);
       }
@@ -83,15 +88,14 @@ export function WorkSessionForm({
   }, [action, state.success, state.message, clientNames.length]);
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <form
-        key={formKey}
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSubmit(new FormData(e.target as HTMLFormElement));
-        }}
-        className="space-y-4"
-      >
+    <form
+      key={formKey}
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit(new FormData(e.target as HTMLFormElement));
+      }}
+      className="space-y-4"
+    >
         <div>
           <label htmlFor="date" className="mb-1.5 block text-sm font-medium text-slate-700">
             التاريخ
@@ -213,14 +217,13 @@ export function WorkSessionForm({
           </p>
         ) : null}
 
-        <button
-          type="submit"
-          disabled={pending}
-          className="touch-manipulation w-full min-h-[52px] rounded-xl bg-sky-600 px-4 py-3.5 text-base font-bold text-white transition active:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {pending ? "جاري الحفظ..." : submitLabel || "حفظ يوم عمل"}
-        </button>
-      </form>
-    </section>
+      <button
+        type="submit"
+        disabled={pending}
+        className="touch-manipulation w-full min-h-[52px] rounded-xl bg-sky-600 px-4 py-3.5 text-base font-bold text-white transition active:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {pending ? "جاري الحفظ..." : submitLabel || "حفظ يوم عمل"}
+      </button>
+    </form>
   );
 }

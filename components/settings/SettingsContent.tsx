@@ -43,7 +43,7 @@ export function SettingsContent() {
           <button
             onClick={() => setShowConfirm(true)}
             disabled={isLoggingOut}
-            className="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-rose-600 text-white px-4 py-3 text-sm font-semibold hover:bg-rose-700 transition-colors disabled:opacity-50"
           >
             <LogOut className="h-4 w-4" />
             {isLoggingOut ? "جارٍ تسجيل الخروج..." : "تسجيل الخروج"}

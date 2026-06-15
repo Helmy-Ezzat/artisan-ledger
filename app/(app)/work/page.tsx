@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { AppHeader } from "@/components/layout/AppHeader";
+import { AppHeaderServer } from "@/components/layout/AppHeaderServer";
 import { WorkSessionForm } from "@/components/forms/WorkSessionForm";
 import { PaymentForm } from "@/components/forms/PaymentForm";
 import { getClientNames } from "@/lib/data";
@@ -12,7 +12,7 @@ export default async function CombinedRecordPage() {
 
   return (
     <>
-      <AppHeader
+      <AppHeaderServer
         title="تسجيل"
         subtitle="سجل يوم عمل أو دفعة"
       />

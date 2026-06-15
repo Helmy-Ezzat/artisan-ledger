@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { AppHeader } from "@/components/layout/AppHeader";
+import { AppHeaderServer } from "@/components/layout/AppHeaderServer";
 import { getClientNames } from "@/lib/data";
 import { SettleAccountForm } from "@/components/forms/SettleAccountForm";
 
@@ -23,7 +23,7 @@ async function SettleContent() {
 export default function SettlePage() {
   return (
     <>
-      <AppHeader title="تصفية حساب" subtitle="تسوية نهائية وأرشفة العميل" />
+      <AppHeaderServer title="تصفية حساب" subtitle="تسوية نهائية وأرشفة العميل" />
       <main className="mx-auto flex max-w-lg flex-col gap-4 px-4 py-4 pb-28">
         <Suspense fallback={<div className="text-center text-slate-500">جاري التحميل...</div>}>
           <SettleContent />

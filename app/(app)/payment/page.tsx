@@ -1,4 +1,4 @@
-import { AppHeader } from "@/components/layout/AppHeader";
+import { AppHeaderServer } from "@/components/layout/AppHeaderServer";
 import { PaymentForm } from "@/components/forms/PaymentForm";
 import { getClientNames } from "@/lib/data";
 
@@ -9,7 +9,7 @@ export default async function PaymentPage() {
 
   return (
     <>
-      <AppHeader
+      <AppHeaderServer
         title="تسجيل دفعة"
         subtitle="سجّل المبلغ المستلم من العميل"
       />

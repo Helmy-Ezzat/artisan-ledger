@@ -11,7 +11,8 @@ const tajawal = Tajawal({
 
 export const metadata: Metadata = {
   title: "دفتر حسابات الصنايعي",
-  description: "تطبيق لمتابعة أيام العمل والمدفوعات وحساب الرصيد المتبقي للصنايعية والفنيين.",
+  description:
+    "تطبيق لمتابعة أيام العمل والمدفوعات وحساب الرصيد المتبقي للصنايعية والفنيين.",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,

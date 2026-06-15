@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useActionState } from "react";
+import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { getDayEarning } from "@/lib/calculations";
 import {
@@ -22,6 +23,7 @@ interface DayDetailSheetProps {
 }
 
 export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -39,12 +41,6 @@ export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
     try {
       const result = await updateWorkSession(day!.id, localState, formData);
       setLocalState(result);
-      if (result.success) {
-        toast.success(result.message);
-        setIsEditing(false);
-      } else if (result.message) {
-        toast.error(result.message);
-      }
       return result;
     } finally {
       setIsPending(false);
@@ -59,6 +55,7 @@ export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
       if (result.success) {
         toast.success(result.message);
         onClose();
+        router.refresh();
       } else {
         toast.error(result.message);
       }
@@ -168,6 +165,11 @@ export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
                   client_name: day.client_name,
                   location: day.location ?? undefined,
                   notes: day.notes ?? undefined
+                }}
+                onSuccess={() => {
+                  setIsEditing(false);
+                  onClose();
+                  router.refresh();
                 }}
               />
             </div>

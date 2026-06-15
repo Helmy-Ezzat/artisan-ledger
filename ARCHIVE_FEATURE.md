@@ -25,7 +25,7 @@ The Archive feature allows you to "settle" client accounts by archiving them ins
 ### 3. **Archive View**
 - Dedicated tab in bottom navigation
 - Shows all archived clients with:
-  - Total earned (اللي ليا)
+   - Total earned (المستحقات)
   - Total received (وصلني)
   - Final balance
   - Number of work days

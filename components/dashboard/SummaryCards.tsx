@@ -1,28 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { createPortal } from "react-dom";
-import { formatCurrency, formatDate } from "@/lib/format";
+import { formatCurrency } from "@/lib/format";
 import type { DayStats } from "@/lib/calculations";
-import type { ArtisanPaymentRow } from "@/lib/database.types";
-import { PAYMENT_METHOD_LABELS } from "@/lib/constants";
-import { CalendarCheck, Coins, Receipt, Edit, Trash2, X } from "lucide-react";
-import { PaymentForm } from "@/components/forms/PaymentForm";
-import { ConfirmDialog } from "@/components/ui/Dialog";
-import { updatePayment, deletePayment, type PaymentActionState } from "@/app/actions/payments";
-import { toast } from "sonner";
+import { CalendarCheck, Coins } from "lucide-react";
 
 interface SummaryCardsProps {
   totalEarned: number;
   totalReceived: number;
   remainingBalance: number;
   stats: DayStats;
-  recentPayments: ArtisanPaymentRow[];
-  clientNames: string[];
 }
 
 const financialItems = [
-  { key: "earned" as const, label: "اللي ليا", color: "text-sky-600", bg: "bg-sky-50" },
+  { key: "earned" as const, label: "المستحقات", color: "text-sky-600", bg: "bg-sky-50" },
   { key: "received" as const, label: "وصلني", color: "text-emerald-600", bg: "bg-emerald-50" },
   { key: "balance" as const, label: "باقي ليا", color: "text-amber-600", bg: "bg-amber-50" },
 ];
@@ -53,41 +43,11 @@ export function SummaryCards({
   totalReceived,
   remainingBalance,
   stats,
-  recentPayments,
-  clientNames,
 }: SummaryCardsProps) {
   const financialValues = {
     earned: totalEarned,
     received: totalReceived,
     balance: remainingBalance,
-  };
-
-  const [editingPayment, setEditingPayment] = useState<ArtisanPaymentRow | null>(null);
-  const [deletePaymentId, setDeletePaymentId] = useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const handleEdit = (payment: ArtisanPaymentRow) => {
-    setEditingPayment(payment);
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!deletePaymentId) return;
-    setIsDeleting(true);
-    try {
-      const result = await deletePayment(deletePaymentId);
-      if (result.success) {
-        toast.success(result.message);
-      } else {
-        toast.error(result.message);
-      }
-    } finally {
-      setIsDeleting(false);
-      setDeletePaymentId(null);
-    }
-  };
-
-  const handleCloseEdit = () => {
-    setEditingPayment(null);
   };
 
   return (
@@ -169,147 +129,7 @@ export function SummaryCards({
             ))}
           </div>
         </div>
-
-        <div className="border-t border-slate-100" />
-
-        {/* Recent Payments Section */}
-        <div>
-          <div className="mb-3 flex items-center gap-2">
-            <Receipt className="h-5 w-5 text-emerald-600" />
-            <h2 className="text-base font-semibold text-slate-900">آخر المدفوعات</h2>
-          </div>
-
-          {recentPayments.length === 0 ? (
-            <p className="rounded-xl bg-slate-50 px-3 py-6 text-center text-sm text-slate-500">
-              لا توجد مدفوعات مسجّلة بعد.
-            </p>
-          ) : (
-            <ul className="space-y-3">
-              {recentPayments.map((payment) => (
-                <li
-                  key={payment.id}
-                  className="rounded-xl border border-slate-100 bg-slate-50 p-3"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate font-medium text-slate-900">
-                        {payment.client_name}
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        {formatDate(payment.date)}
-                      </p>
-                      <p className="mt-1 text-xs text-slate-500">
-                        {PAYMENT_METHOD_LABELS[payment.payment_method]}
-                      </p>
-                    </div>
-                    <div className="flex shrink-0 flex-col items-end gap-2">
-                      <p className="font-semibold text-emerald-700 whitespace-nowrap">
-                        {formatCurrency(payment.amount)}
-                      </p>
-                      <div className="flex gap-1">
-                        <button
-                          onClick={() => handleEdit(payment)}
-                          className="h-8 w-8 flex items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 active:scale-95 transition-transform"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => setDeletePaymentId(payment.id)}
-                          disabled={isDeleting}
-                          className="h-8 w-8 flex items-center justify-center rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 active:scale-95 transition-transform disabled:opacity-50"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
       </section>
-
-      {editingPayment &&
-        createPortal(
-          <div className="fixed inset-0 z-[100] flex items-end justify-center p-4 bg-black/50">
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg bg-white rounded-2xl shadow-2xl p-4"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-slate-900">تعديل الدفعة</h3>
-                <button
-                  onClick={handleCloseEdit}
-                  className="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200"
-                >
-                  <X className="h-4.5 w-4.5" />
-                </button>
-              </div>
-              <PaymentEditForm
-                payment={editingPayment}
-                clientNames={clientNames}
-                onClose={handleCloseEdit}
-              />
-            </div>
-          </div>,
-          document.body,
-        )}
-      <ConfirmDialog
-        isOpen={!!deletePaymentId}
-        onClose={() => setDeletePaymentId(null)}
-        onConfirm={handleDeleteConfirm}
-        title="حذف الدفعة"
-        message="هل أنت متأكد من حذف هذه الدفعة؟"
-        confirmLabel="حذف"
-        isLoading={isDeleting}
-      />
     </>
-  );
-}
-
-function PaymentEditForm({
-  payment,
-  clientNames,
-  onClose,
-}: {
-  payment: ArtisanPaymentRow;
-  clientNames: string[];
-  onClose: () => void;
-}) {
-  const [isPending, setIsPending] = useState(false);
-  const [localState, setLocalState] = useState<PaymentActionState>({
-    success: false,
-    message: ""
-  });
-  
-  const handleUpdate = async (formData: FormData) => {
-    setIsPending(true);
-    try {
-      const result = await updatePayment(payment.id, localState, formData);
-      setLocalState(result);
-      if (result.success) {
-        toast.success(result.message);
-        onClose();
-      } else if (result.message) {
-        toast.error(result.message);
-      }
-      return result;
-    } finally {
-      setIsPending(false);
-    }
-  };
-
-  return (
-    <PaymentForm
-      action={handleUpdate}
-      isPending={isPending}
-      clientNames={clientNames}
-      initialData={{
-        ...payment,
-        notes: payment.notes ?? undefined
-      }}
-      submitLabel="تحديث الدفعة"
-    />
   );
 }

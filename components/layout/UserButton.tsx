@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 export function UserButton({
@@ -17,24 +18,27 @@ export function UserButton({
 
   const fallbackInitial = (user.user_metadata.full_name?.charAt(0) || user.email?.charAt(0)?.toUpperCase() || "U");
   const displayName = user.user_metadata.full_name || user.email?.split("@")[0] || "مستخدم";
+  const avatarUrl = user.user_metadata.avatar_url;
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="text-right hidden sm:block">
+    <div className="flex items-center gap-3">
+      <div className="text-right">
         <p className="text-sm font-semibold text-slate-900 leading-tight">
           {displayName}
         </p>
       </div>
 
-      {user.user_metadata.avatar_url && !imgError ? (
-        <img
-          src={user.user_metadata.avatar_url}
+      {avatarUrl && !imgError ? (
+        <Image
+          src={avatarUrl}
           alt="الصورة الشخصية"
-          className="h-10 w-10 rounded-full border border-slate-200 object-cover shadow-sm"
+          width={40}
+          height={40}
+          className="rounded-full border border-slate-200 object-cover shadow-sm"
           onError={() => setImgError(true)}
         />
       ) : (
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white font-bold text-base shadow-sm">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-teal-500 to-emerald-600 text-white font-bold text-base shadow-sm">
           {fallbackInitial}
         </div>
       )}

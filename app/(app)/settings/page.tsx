@@ -1,4 +1,4 @@
-import { AppHeader } from "@/components/layout/AppHeader";
+import { AppHeaderServer } from "@/components/layout/AppHeaderServer";
 import { SettingsContent } from "@/components/settings/SettingsContent";
 
 export const dynamic = "force-dynamic";
@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export default function SettingsPage() {
   return (
     <>
-      <AppHeader
+      <AppHeaderServer
         title="الإعدادات"
         subtitle="تخصيص التطبيق"
       />
