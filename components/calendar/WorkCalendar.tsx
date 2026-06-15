@@ -67,8 +67,6 @@ export function WorkCalendar({ days }: WorkCalendarProps) {
           <button
             type="button"
             onClick={goToPrevMonth}
-            onMouseDown={goToPrevMonth}
-            onTouchStart={goToPrevMonth}
             className="touch-manipulation flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700 active:bg-slate-200"
             aria-label="الشهر السابق"
           >
@@ -82,8 +80,6 @@ export function WorkCalendar({ days }: WorkCalendarProps) {
             <button
               type="button"
               onClick={goToToday}
-              onMouseDown={goToToday}
-              onTouchStart={goToToday}
               className="touch-manipulation mt-1 min-h-[32px] px-2 text-xs font-bold text-teal-600 active:text-teal-800"
             >
               الرجوع لليوم
@@ -93,8 +89,6 @@ export function WorkCalendar({ days }: WorkCalendarProps) {
           <button
             type="button"
             onClick={goToNextMonth}
-            onMouseDown={goToNextMonth}
-            onTouchStart={goToNextMonth}
             className="touch-manipulation flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700 active:bg-slate-200"
             aria-label="الشهر التالي"
           >
@@ -125,8 +119,6 @@ export function WorkCalendar({ days }: WorkCalendarProps) {
                   key={cell.dateKey}
                   type="button"
                   onClick={() => openDay(record)}
-                  onMouseDown={() => openDay(record)}
-                  onTouchStart={() => openDay(record)}
                   className={`touch-manipulation relative flex min-h-[44px] flex-col items-center justify-center rounded-xl text-sm font-bold text-white shadow-sm active:scale-95 ${statusColor?.bg} ${
                     !cell.inMonth ? "opacity-60" : ""
                   }`}
