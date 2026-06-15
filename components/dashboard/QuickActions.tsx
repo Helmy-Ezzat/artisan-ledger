@@ -3,11 +3,7 @@
 import { Briefcase, ChevronLeft, HandCoins } from "lucide-react";
 import Link from "next/link";
 
-interface QuickActionsProps {
-  clientNames: string[];
-}
-
-export function QuickActions({ clientNames }: QuickActionsProps) {
+export function QuickActions() {
 
   return (
     <>

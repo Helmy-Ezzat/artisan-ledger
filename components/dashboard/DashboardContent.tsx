@@ -1,10 +1,9 @@
 import { SummaryCards } from "@/components/dashboard/SummaryCards";
 import { QuickActions } from "@/components/dashboard/QuickActions";
-import { getDashboardData, getClientNames } from "@/lib/data";
+import { getDashboardData } from "@/lib/data";
 
 export async function DashboardContent() {
   const dashboard = await getDashboardData();
-  const clientNames = await getClientNames();
   
   return (
     <>
@@ -14,7 +13,7 @@ export async function DashboardContent() {
         remainingBalance={dashboard.remainingBalance}
         stats={dashboard.dayStats}
       />
-      <QuickActions clientNames={clientNames} />
+      <QuickActions />
     </>
   );
 }
