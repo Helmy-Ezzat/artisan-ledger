@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { Filter } from "lucide-react";
 import { calculateTotalEarned, calculateTotalReceived, calculateRemainingBalance } from "@/lib/calculations";
 import { formatCurrency } from "@/lib/format";
-import { Coins, Filter } from "lucide-react";
 import type { ArtisanDayRow, ArtisanPaymentRow } from "@/lib/database.types";
 
 export function ReportsClient({ 
@@ -45,59 +45,7 @@ export function ReportsClient({
   const totalReceived = calculateTotalReceived(filteredPayments);
   const remainingBalance = calculateRemainingBalance(totalEarned, totalReceived);
 
-  // Group by month for monthly stats
-  const monthlyStats = useMemo(() => {
-    const months = new Map();
-
-    filteredWorkDays.forEach((day) => {
-      const date = new Date(day.date);
-      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-      if (!months.has(monthKey)) {
-        months.set(monthKey, {
-          year: date.getFullYear(),
-          month: date.getMonth(),
-          workDays: 0,
-          halfDays: 0,
-          offDays: 0,
-          earned: 0,
-          received: 0,
-        });
-      }
-      const stat = months.get(monthKey);
-      stat.workDays += day.status === "Full Day" ? 1 : 0;
-      stat.halfDays += day.status === "Half Day" ? 1 : 0;
-      stat.offDays += day.status === "Holiday" ? 1 : 0;
-      stat.earned += day.status === "Full Day" ? day.daily_rate : day.status === "Half Day" ? day.daily_rate / 2 : 0;
-    });
-
-    filteredPayments.forEach((payment) => {
-      const date = new Date(payment.date);
-      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-      if (!months.has(monthKey)) {
-        months.set(monthKey, {
-          year: date.getFullYear(),
-          month: date.getMonth(),
-          workDays: 0,
-          halfDays: 0,
-          offDays: 0,
-          earned: 0,
-          received: 0,
-        });
-      }
-      const stat = months.get(monthKey);
-      stat.received += payment.amount;
-    });
-
-    return Array.from(months.values()).sort((a, b) => {
-      if (a.year !== b.year) return b.year - a.year;
-      return b.month - a.month;
-    });
-  }, [filteredWorkDays, filteredPayments]);
-
-  const monthNames = [
-    "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
-    "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
-  ];
+  const hasFilters = selectedClient || selectedStatus || startDate || endDate;
 
   return (
     <div className="space-y-4">
@@ -170,50 +118,30 @@ export function ReportsClient({
         </div>
       </section>
 
-      {/* الملخص محذوف بناءً على طلب المستخدم - يبقى الفلتر والإحصاءات الشهرية فقط */}
-
-      {/* Monthly Stats */}
-      {monthlyStats.length > 0 ? (
-        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
-          <h3 className="font-semibold text-slate-900">الإحصائيات الشهرية</h3>
-          <div className="space-y-3">
-            {monthlyStats.map((stat, index) => (
-              <div key={index} className="rounded-xl border border-slate-100 bg-slate-50 p-3">
-                <h4 className="font-semibold text-slate-900 mb-2">
-                  {monthNames[stat.month]} {stat.year}
-                </h4>
-                <div className="grid grid-cols-3 gap-2 mb-3">
-                  <div className="text-center">
-                    <p className="text-[10px] text-slate-500">أيام كاملة</p>
-                    <p className="text-base font-bold text-sky-700">{stat.workDays}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-[10px] text-slate-500">نصف يوم</p>
-                    <p className="text-base font-bold text-amber-600">{stat.halfDays}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-[10px] text-slate-500">إجازات</p>
-                    <p className="text-base font-bold text-rose-600">{stat.offDays}</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="flex items-center justify-between rounded-lg bg-sky-100 px-2 py-1.5">
-                    <span className="text-sky-700 text-xs font-semibold">المستحقات</span>
-                    <span className="text-sky-700 font-bold">{formatCurrency(stat.earned)}</span>
-                  </div>
-                  <div className="flex items-center justify-between rounded-lg bg-emerald-100 px-2 py-1.5">
-                    <span className="text-emerald-700 text-xs font-semibold">وصلني</span>
-                    <span className="text-emerald-700 font-bold">{formatCurrency(stat.received)}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
+      {/* Filtered Summary */}
+      {hasFilters && (
+        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <h3 className="font-semibold text-slate-900 mb-3">نتائج التصفية</h3>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="rounded-xl bg-sky-50 px-2 py-3 text-center">
+              <p className="text-[11px] font-bold text-sky-600">المستحقات</p>
+              <p className="mt-1 text-sm font-extrabold text-slate-900">{formatCurrency(totalEarned)}</p>
+            </div>
+            <div className="rounded-xl bg-emerald-50 px-2 py-3 text-center">
+              <p className="text-[11px] font-bold text-emerald-600">وصلني</p>
+              <p className="mt-1 text-sm font-extrabold text-slate-900">{formatCurrency(totalReceived)}</p>
+            </div>
+            <div className="rounded-xl bg-amber-50 px-2 py-3 text-center">
+              <p className="text-[11px] font-bold text-amber-600">باقي</p>
+              <p className={`mt-1 text-sm font-extrabold ${remainingBalance > 0 ? "text-emerald-700" : remainingBalance < 0 ? "text-rose-700" : "text-slate-900"}`}>
+                {formatCurrency(Math.abs(remainingBalance))}
+              </p>
+            </div>
           </div>
+          <p className="mt-2 text-xs text-slate-500 text-center">
+            {filteredWorkDays.length} يوم عمل · {filteredPayments.length} دفعة
+          </p>
         </section>
-      ) : (
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
-          <p className="text-slate-500">لا توجد بيانات للفترة المحددة</p>
-        </div>
       )}
     </div>
   );

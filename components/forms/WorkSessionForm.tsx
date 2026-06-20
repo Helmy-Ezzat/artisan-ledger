@@ -14,6 +14,7 @@ import {
 } from "@/lib/constants";
 import { getTodayISO } from "@/lib/dates";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 interface WorkSessionFormProps {
   clientNames?: string[];
@@ -114,7 +115,7 @@ export function WorkSessionForm({
             htmlFor="daily_rate"
             className="mb-1.5 block text-sm font-medium text-slate-700"
           >
-            الأجر اليومي (ريال)
+            الأجر اليومي (﷼)
           </label>
           <input
             id="daily_rate"
@@ -220,8 +221,9 @@ export function WorkSessionForm({
       <button
         type="submit"
         disabled={pending}
-        className="touch-manipulation w-full min-h-[52px] rounded-xl bg-sky-600 px-4 py-3.5 text-base font-bold text-white transition active:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
+        className="touch-manipulation flex w-full min-h-[52px] items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 py-3.5 text-base font-bold text-white transition active:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
       >
+        {pending && <Loader2 className="h-5 w-5 animate-spin" />}
         {pending ? "جاري الحفظ..." : submitLabel || "حفظ يوم عمل"}
       </button>
     </form>

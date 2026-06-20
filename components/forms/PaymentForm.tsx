@@ -11,6 +11,7 @@ import { FieldError } from "@/components/ui/FieldError";
 import { PAYMENT_METHODS, PAYMENT_METHOD_LABELS } from "@/lib/constants";
 import { getTodayISO } from "@/lib/dates";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 interface PaymentFormProps {
   clientNames?: string[];
@@ -108,7 +109,7 @@ export function PaymentForm({
 
         <div>
           <label htmlFor="amount" className="mb-1.5 block text-sm font-medium text-slate-700">
-            المبلغ (ريال)
+            المبلغ (﷼)
           </label>
           <input
             id="amount"
@@ -182,12 +183,13 @@ export function PaymentForm({
         ) : null}
 
         <button
-          type="submit"
-          disabled={pending}
-          className="touch-manipulation w-full min-h-[52px] rounded-xl bg-emerald-600 px-4 py-3.5 text-base font-bold text-white transition active:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {pending ? "جاري الحفظ..." : submitLabel || "حفظ الدفعة"}
-        </button>
+        type="submit"
+        disabled={pending}
+        className="touch-manipulation flex w-full min-h-[52px] items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3.5 text-base font-bold text-white transition active:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {pending && <Loader2 className="h-5 w-5 animate-spin" />}
+        {pending ? "جاري الحفظ..." : submitLabel || "حفظ الدفعة"}
+      </button>
       </form>
     </section>
   );

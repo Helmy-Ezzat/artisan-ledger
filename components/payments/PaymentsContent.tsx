@@ -4,8 +4,8 @@ import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { PaymentForm } from "@/components/forms/PaymentForm";
-import { formatDate, formatCurrency } from "@/lib/format";
-import { Plus, Receipt, Trash2, Edit } from "lucide-react";
+import { formatDateNumeric, formatCurrency } from "@/lib/format";
+import { Plus, Receipt, Trash2, Edit, Loader2 } from "lucide-react";
 import { Drawer } from "@/components/ui/Drawer";
 import type { ArtisanPaymentRow } from "@/lib/database.types";
 import { deletePayment, updatePayment, type PaymentActionState } from "@/app/actions/payments";
@@ -85,7 +85,7 @@ export function PaymentsContent({ initialPayments, clientNames }: PaymentsConten
                       {payment.client_name}
                     </p>
                     <p className="text-xs text-slate-500">
-                      {formatDate(payment.date)}
+                      {formatDateNumeric(payment.date)}
                     </p>
                     <p className="mt-1 text-xs text-slate-500">
                       {PAYMENT_METHOD_LABELS[payment.payment_method]}
@@ -171,8 +171,13 @@ export function PaymentsContent({ initialPayments, clientNames }: PaymentsConten
               <button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="flex-1 px-4 py-2 rounded-xl bg-rose-600 text-white font-medium hover:bg-rose-700 disabled:opacity-50"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-rose-600 px-4 py-3 text-sm font-semibold text-white active:bg-rose-700 disabled:opacity-50 flex-row"
               >
+                {isDeleting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Trash2 className="h-4 w-4" />
+                )}
                 {isDeleting ? "جاري الحذف..." : "حذف"}
               </button>
             </div>

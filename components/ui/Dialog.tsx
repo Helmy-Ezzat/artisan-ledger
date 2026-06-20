@@ -1,7 +1,7 @@
 "use client";
 
 import { createPortal } from "react-dom";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export interface DialogProps {
@@ -100,9 +100,16 @@ export function ConfirmDialog({
           <button
             onClick={onConfirm}
             disabled={isLoading}
-            className="px-4 py-2 rounded-xl bg-rose-600 text-white font-medium hover:bg-rose-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-xl bg-rose-600 text-white font-medium hover:bg-rose-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            {isLoading ? "..." : confirmLabel}
+            {isLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                جاري...
+              </>
+            ) : (
+              confirmLabel
+            )}
           </button>
         </>
       }

@@ -17,7 +17,7 @@ function parseLocalDate(dateString: string): Date {
 export function formatCurrency(amount: number): string {
   // نضبط العدد عشان ميجيش أرقام عشوائية زي 149.96 بدل 150
   const roundedAmount = Math.round(amount * 100) / 100;
-  return `${numberFormatter.format(roundedAmount)} ريال`;
+  return `${numberFormatter.format(roundedAmount)} ﷼`;
 }
 
 // ٢. التاريخ القصير (مثل: 11 يونيو 2026)
@@ -33,4 +33,9 @@ export function formatDateLong(date: string): string {
 // ٤. تنسيق تقرير الشهر والسنة (مثل: يونيو 2026)
 export function formatMonthYear(year: number, month: number): string {
   return format(new Date(year, month, 1), "MMMM yyyy", { locale: arSA });
+}
+
+// ٥. تنسيق التاريخ بالأرقام فقط (مثل: 2026/06/11)
+export function formatDateNumeric(date: string): string {
+  return format(parseLocalDate(date), "yyyy/MM/dd");
 }

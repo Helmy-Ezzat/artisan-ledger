@@ -19,10 +19,11 @@ import { toast } from "sonner";
 
 interface DayDetailSheetProps {
   day: ArtisanDayRow | null;
+  clientNames: string[];
   onClose: () => void;
 }
 
-export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
+export function DayDetailSheet({ day, clientNames, onClose }: DayDetailSheetProps) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -155,6 +156,7 @@ export function DayDetailSheet({ day, onClose }: DayDetailSheetProps) {
           {isEditing ? (
             <div className="mb-6">
               <WorkSessionForm 
+                clientNames={clientNames}
                 action={handleUpdate} 
                 isPending={isPending}
                 initialData={{

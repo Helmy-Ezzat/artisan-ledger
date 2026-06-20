@@ -9,6 +9,7 @@ import { PAYMENT_METHODS, PAYMENT_METHOD_LABELS } from "@/lib/constants";
 import { getTodayISO } from "@/lib/dates";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 interface SettleAccountFormProps {
   clientNames: string[];
@@ -36,24 +37,33 @@ export function SettleAccountForm({ clientNames }: SettleAccountFormProps) {
 
     setPending(true);
     try {
-      // Step 1: Create the final payment
-      const paymentResult = await createPayment(state, formData);
-      setState(paymentResult);
+      const archiveNotes = formData.get("archive_notes") as string;
+      let finalNotes = archiveNotes;
 
-      if (!paymentResult.success) {
-        toast.error(paymentResult.message);
-        setPending(false);
-        return;
+      // Step 1: Create the final payment if amount is provided and > 0
+      const amountStr = formData.get("amount") as string;
+      const amount = amountStr ? parseFloat(amountStr) : 0;
+      
+      if (amount > 0) {
+        const paymentResult = await createPayment(state, formData);
+        setState(paymentResult);
+
+        if (!paymentResult.success) {
+          toast.error(paymentResult.message);
+          setPending(false);
+          return;
+        }
+        toast.success(paymentResult.message);
+      } else {
+        // If no payment was made, ensure we don't display a fake success from previous state
+        setState({ success: true, message: "" });
       }
 
-      toast.success(paymentResult.message);
-
       // Step 2: Archive the client
-      const archiveNotes = formData.get("archive_notes") as string;
       const archiveResult = await archiveClientAction(
         clientName,
         undefined, // We don't have the payment ID yet from the action
-        archiveNotes
+        finalNotes
       );
 
       if (archiveResult.success) {
@@ -138,7 +148,7 @@ export function SettleAccountForm({ clientNames }: SettleAccountFormProps) {
           {/* Amount */}
           <div>
             <label htmlFor="settle_amount" className="mb-1.5 block text-sm font-medium text-slate-700">
-              المبلغ النهائي (ريال)
+              المبلغ النهائي (﷼) - اختياري
             </label>
             <input
               id="settle_amount"
@@ -147,8 +157,7 @@ export function SettleAccountForm({ clientNames }: SettleAccountFormProps) {
               min="0"
               step="1"
               inputMode="numeric"
-              placeholder="مثال: 1000"
-              required
+              placeholder="مثال: 1000 (اتركه فارغاً إذا لم توجد دفعة)"
               className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
             />
             <FieldError message={state.fieldErrors?.amount} />
@@ -222,8 +231,9 @@ export function SettleAccountForm({ clientNames }: SettleAccountFormProps) {
           <button
             type="submit"
             disabled={pending}
-            className="touch-manipulation w-full min-h-[52px] rounded-xl bg-rose-600 px-4 py-3.5 text-base font-bold text-white transition active:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="touch-manipulation flex w-full min-h-[52px] items-center justify-center gap-2 rounded-xl bg-rose-600 px-4 py-3.5 text-base font-bold text-white transition active:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
+            {pending && <Loader2 className="h-5 w-5 animate-spin" />}
             {pending ? "جاري التصفية..." : "تصفية الحساب وأرشفة العميل"}
           </button>
         </form>

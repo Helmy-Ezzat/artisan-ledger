@@ -1,7 +1,10 @@
 import { WorkCalendar } from "@/components/calendar/WorkCalendar";
-import { getAllWorkDays } from "@/lib/data";
+import { getAllWorkDays, getClientNames } from "@/lib/data";
 
 export async function CalendarContent() {
-  const days = await getAllWorkDays();
-  return <WorkCalendar days={days} />;
+  const [days, clientNames] = await Promise.all([
+    getAllWorkDays(),
+    getClientNames()
+  ]);
+  return <WorkCalendar days={days} clientNames={clientNames} />;
 }

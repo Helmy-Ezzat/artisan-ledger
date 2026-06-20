@@ -35,6 +35,13 @@ export function calculateRemainingBalance(
   return totalEarned - totalReceived;
 }
 
+export function calculateTotalWorkDays(days: EarningInput[]): number {
+  return days.reduce(
+    (total, day) => total + STATUS_MULTIPLIER[day.status],
+    0,
+  );
+}
+
 export function calculateDayStats(days: ArtisanDayRow[]): DayStats {
   return days.reduce<DayStats>(
     (stats, day) => {

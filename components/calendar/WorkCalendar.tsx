@@ -15,9 +15,10 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface WorkCalendarProps {
   days: ArtisanDayRow[];
+  clientNames: string[];
 }
 
-export function WorkCalendar({ days }: WorkCalendarProps) {
+export function WorkCalendar({ days, clientNames }: WorkCalendarProps) {
   const now = new Date();
   const [view, setView] = useState({
     year: now.getFullYear(),
@@ -160,7 +161,11 @@ export function WorkCalendar({ days }: WorkCalendarProps) {
         </div>
       </section>
 
-      <DayDetailSheet day={selectedDay} onClose={() => setSelectedDay(null)} />
+      <DayDetailSheet
+        day={selectedDay}
+        clientNames={clientNames}
+        onClose={() => setSelectedDay(null)}
+      />
     </>
   );
 }

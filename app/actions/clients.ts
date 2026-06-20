@@ -97,6 +97,63 @@ export async function unarchiveClientAction(
 }
 
 /**
+ * Permanently delete a client and all their related data
+ */
+export async function deleteClientPermanentlyAction(
+  clientName: string
+): Promise<ClientActionState> {
+  if (!clientName || clientName.trim() === "") {
+    return { success: false, message: "اسم العميل مطلوب." };
+  }
+
+  const supabase = await createClient();
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { success: false, message: "يجب تسجيل الدخول أولاً." };
+  }
+
+  // Delete all days
+  const { error: daysError } = await supabase
+    .from("artisan_days")
+    .delete()
+    .eq("user_id", user.id)
+    .eq("client_name", clientName);
+
+  if (daysError) {
+    console.error("Delete client days error:", daysError);
+    return { success: false, message: "تعذر حذف أيام العمل للعميل." };
+  }
+
+  // Delete all payments
+  const { error: paymentsError } = await supabase
+    .from("artisan_payments")
+    .delete()
+    .eq("user_id", user.id)
+    .eq("client_name", clientName);
+
+  if (paymentsError) {
+    console.error("Delete client payments error:", paymentsError);
+    return { success: false, message: "تعذر حذف مدفوعات العميل." };
+  }
+
+  // Delete from archive
+  const { error: archiveError } = await supabase
+    .from("archived_clients")
+    .delete()
+    .eq("user_id", user.id)
+    .eq("client_name", clientName);
+
+  if (archiveError) {
+    console.error("Delete client archive error:", archiveError);
+    return { success: false, message: "تعذر حذف بيانات أرشفة العميل." };
+  }
+
+  revalidateApp();
+  return { success: true, message: `تم حذف العميل "${clientName}" نهائياً بنجاح.` };
+}
+
+/**
  * Get all archived clients for the current user
  */
 export async function getArchivedClients(): Promise<ArchivedClientRow[]> {

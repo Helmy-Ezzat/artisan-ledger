@@ -8,6 +8,7 @@ interface SummaryCardsProps {
   totalEarned: number;
   totalReceived: number;
   remainingBalance: number;
+  totalWorkDays: number;
   stats: DayStats;
 }
 
@@ -42,6 +43,7 @@ export function SummaryCards({
   totalEarned,
   totalReceived,
   remainingBalance,
+  totalWorkDays,
   stats,
 }: SummaryCardsProps) {
   const financialValues = {
@@ -98,6 +100,11 @@ export function SummaryCards({
                 >
                   {item.key === "balance" && value < 0 ? `${displayValue} زائد` : displayValue}
                 </p>
+                {item.key === "earned" && totalWorkDays > 0 && (
+                  <p className="mt-0.5 text-[10px] font-medium text-slate-500">
+                    ({totalWorkDays} يوم عمل)
+                  </p>
+                )}
               </div>
             );
           })}
