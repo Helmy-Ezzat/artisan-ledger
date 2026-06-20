@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { getTodayISO } from "@/lib/dates";
 import { format, parseISO } from "date-fns";
 import { ar } from "date-fns/locale";
@@ -13,6 +13,8 @@ interface ArabicDateFieldProps {
   name: string;
   defaultValue?: string;
   accent?: "sky" | "emerald";
+  /** ISO date strings (YYYY-MM-DD) of already-registered work days */
+  registeredDates?: string[];
 }
 
 const accentClasses = {
@@ -31,13 +33,20 @@ export function ArabicDateField({
   name,
   defaultValue,
   accent = "sky",
+  registeredDates = [],
 }: ArabicDateFieldProps) {
   const today = getTodayISO();
   const [dateStr, setDateStr] = useState(defaultValue ?? today);
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   const styles = accentClasses[accent];
+
+  // Convert ISO strings → Date objects once
+  const registeredDateObjects = useMemo(
+    () => registeredDates.map((d) => parseISO(d)),
+    [registeredDates],
+  );
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -91,7 +100,12 @@ export function ArabicDateField({
               }
             }}
             locale={ar}
-            disabled={{ after: new Date() }} // Prevent future dates
+            disabled={[
+              { after: new Date() },
+              ...registeredDateObjects,
+            ]}
+            modifiers={{ registered: registeredDateObjects }}
+            modifiersClassNames={{ registered: "rdp-registered" }}
             showOutsideDays
             className="font-sans"
           />

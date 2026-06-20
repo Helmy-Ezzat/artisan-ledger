@@ -39,7 +39,7 @@ export default function RootLayout({
       dir="rtl"
       className={`${tajawal.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans text-slate-900">
+      <body className="min-h-full flex flex-col font-sans text-slate-900" suppressHydrationWarning>
         {children}
         <ToasterProvider />
       </body>

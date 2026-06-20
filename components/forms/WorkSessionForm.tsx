@@ -18,6 +18,7 @@ import { Loader2 } from "lucide-react";
 
 interface WorkSessionFormProps {
   clientNames?: string[];
+  registeredDates?: string[];
   action?: (formData: FormData) => Promise<WorkSessionActionState>;
   isPending?: boolean;
   initialData?: {
@@ -36,6 +37,7 @@ interface WorkSessionFormProps {
 
 export function WorkSessionForm({ 
   clientNames = [], 
+  registeredDates = [],
   action,
   isPending,
   initialData,
@@ -106,6 +108,7 @@ export function WorkSessionForm({
             name="date"
             defaultValue={initialData?.date || getTodayISO()}
             accent="sky"
+            registeredDates={registeredDates}
           />
           <FieldError message={state.fieldErrors?.date} />
         </div>

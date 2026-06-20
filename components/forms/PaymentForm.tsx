@@ -82,15 +82,14 @@ export function PaymentForm({
   }, [action, state.success, state.message, clientNames.length]);
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <form
-        key={formKey}
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSubmit(new FormData(e.target as HTMLFormElement));
-        }}
-        className="space-y-4"
-      >
+    <form
+      key={formKey}
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit(new FormData(e.target as HTMLFormElement));
+      }}
+      className="space-y-4"
+    >
         <div>
           <label
             htmlFor="payment_date"
@@ -190,7 +189,6 @@ export function PaymentForm({
         {pending && <Loader2 className="h-5 w-5 animate-spin" />}
         {pending ? "جاري الحفظ..." : submitLabel || "حفظ الدفعة"}
       </button>
-      </form>
-    </section>
+    </form>
   );
 }

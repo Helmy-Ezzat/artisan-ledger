@@ -8,9 +8,10 @@ import { WorkSessionForm } from "@/components/forms/WorkSessionForm";
 
 interface CalendarPageClientProps {
   clientNames: string[];
+  registeredDates: string[];
 }
 
-export function CalendarPageClient({ clientNames }: CalendarPageClientProps) {
+export function CalendarPageClient({ clientNames, registeredDates }: CalendarPageClientProps) {
   const [showRegisterForm, setShowRegisterForm] = useState(false);
   const router = useRouter();
 
@@ -33,6 +34,7 @@ export function CalendarPageClient({ clientNames }: CalendarPageClientProps) {
       >
         <WorkSessionForm
           clientNames={clientNames}
+          registeredDates={registeredDates}
           onSuccess={() => {
             setShowRegisterForm(false);
             router.refresh();

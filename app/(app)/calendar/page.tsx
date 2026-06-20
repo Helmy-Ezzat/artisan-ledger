@@ -3,16 +3,21 @@ import { AppHeaderServer } from "@/components/layout/AppHeaderServer";
 import { CalendarContent } from "@/components/calendar/CalendarContent";
 import { WorkCalendarSkeleton } from "@/components/calendar/WorkCalendarSkeleton";
 import { CalendarPageClient } from "./CalendarPageClient";
-import { getClientNames } from "@/lib/data";
+import { getClientNames, getAllWorkDays } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
 async function CalendarPageWrapper() {
-  const clientNames = await getClientNames();
+  const [clientNames, days] = await Promise.all([
+    getClientNames(),
+    getAllWorkDays(),
+  ]);
+
+  const registeredDates = days.map((d) => d.date.slice(0, 10));
 
   return (
     <div className="space-y-4">
-      <CalendarPageClient clientNames={clientNames} />
+      <CalendarPageClient clientNames={clientNames} registeredDates={registeredDates} />
       <Suspense fallback={<WorkCalendarSkeleton />}>
         <CalendarContent />
       </Suspense>
