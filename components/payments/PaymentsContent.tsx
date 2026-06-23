@@ -223,6 +223,7 @@ function PaymentEditForm({
       clientNames={clientNames}
       initialData={{
         ...payment,
+        location: payment.location ?? undefined,
         notes: payment.notes ?? undefined,
       }}
       submitLabel="تحديث الدفعة"
