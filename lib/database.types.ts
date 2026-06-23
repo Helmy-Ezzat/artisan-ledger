@@ -1,5 +1,14 @@
-export type DayStatus = "Full Day" | "Half Day" | "Holiday";
+export type DayStatus = "Full Day" | "Half Day" | "Holiday" | "Vacation";
 export type PaymentMethod = "Cash" | "Bank Transfer";
+
+export interface ShareTokenRow {
+  id: string;
+  token: string;
+  user_id: string;
+  client_name: string;
+  expires_at: string;
+  created_at: string;
+}
 
 export interface ArtisanDayRow {
   id: string;
@@ -20,6 +29,7 @@ export interface ArtisanPaymentRow {
   amount: number;
   client_name: string;
   payment_method: PaymentMethod;
+  location: string | null;
   notes: string | null;
 }
 

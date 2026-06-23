@@ -1,8 +1,5 @@
 import { z } from "zod";
-import {
-  DAY_STATUSES,
-  PAYMENT_METHODS,
-} from "@/lib/constants";
+import { DAY_STATUSES, PAYMENT_METHODS } from "@/lib/constants";
 
 export const workSessionSchema = z.object({
   date: z.string().min(1, "التاريخ مطلوب"),
@@ -11,7 +8,7 @@ export const workSessionSchema = z.object({
     .positive("الأجر اليومي يجب أن يكون أكبر من صفر"),
   status: z.enum(DAY_STATUSES, { error: "اختر حالة اليوم" }),
   profession_type: z.string().trim().min(1, "المهنة مطلوبة"),
-  client_name: z.string().trim().min(1, "اسم العميل مطلوب"),
+  client_name: z.string().trim().min(1, "اسم المقاول مطلوب"),
   location: z.string().trim().optional(),
   notes: z.string().trim().optional(),
 });
@@ -21,8 +18,9 @@ export const paymentSchema = z.object({
   amount: z.coerce
     .number({ error: "المبلغ يجب أن يكون رقماً" })
     .positive("المبلغ يجب أن يكون أكبر من صفر"),
-  client_name: z.string().trim().min(1, "اسم العميل مطلوب"),
+  client_name: z.string().trim().min(1, "اسم المقاول مطلوب"),
   payment_method: z.enum(PAYMENT_METHODS, { error: "اختر طريقة الدفع" }),
+  location: z.string().trim().optional(),
   notes: z.string().trim().optional(),
 });
 

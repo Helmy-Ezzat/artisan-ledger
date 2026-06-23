@@ -112,7 +112,13 @@ export function WorkCalendar({ days, clientNames }: WorkCalendarProps) {
           {cells.map((cell) => {
             const record = daysByDate.get(cell.dateKey);
             const isToday = cell.dateKey === todayKey;
-            const statusColor = record ? STATUS_COLORS[record.status] : null;
+            const statusColor = record
+              ? STATUS_COLORS[record.status as keyof typeof STATUS_COLORS] ?? {
+                  bg: "bg-slate-500",
+                  dot: "bg-slate-500",
+                  text: "text-slate-700",
+                }
+              : null;
 
             if (record) {
               return (
@@ -147,7 +153,7 @@ export function WorkCalendar({ days, clientNames }: WorkCalendarProps) {
         </div>
 
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 border-t border-slate-100 pt-3">
-          {(["Full Day", "Half Day", "Holiday"] as const).map((status) => (
+          {(["Full Day", "Half Day", "Holiday", "Vacation"] as const).map((status) => (
             <div
               key={status}
               className="flex items-center gap-1.5 text-xs text-slate-600"

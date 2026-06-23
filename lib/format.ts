@@ -16,7 +16,8 @@ function parseLocalDate(dateString: string): Date {
 // ١. تنسيق العملة بالأرقام الإنجليزية
 export function formatCurrency(amount: number): string {
   // نضبط العدد عشان ميجيش أرقام عشوائية زي 149.96 بدل 150
-  const roundedAmount = Math.round(amount * 100) / 100;
+  const safeAmount = isNaN(amount) || !isFinite(amount) ? 0 : amount;
+  const roundedAmount = Math.round(safeAmount * 100) / 100;
   return `${numberFormatter.format(roundedAmount)} ﷼`;
 }
 

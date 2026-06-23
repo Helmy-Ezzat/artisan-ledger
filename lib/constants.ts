@@ -1,6 +1,6 @@
 import type { DayStatus, PaymentMethod } from "@/lib/database.types";
 
-export const DAY_STATUSES: DayStatus[] = ["Full Day", "Half Day", "Holiday"];
+export const DAY_STATUSES: DayStatus[] = ["Full Day", "Half Day", "Holiday", "Vacation"];
 
 export const PAYMENT_METHODS: PaymentMethod[] = ["Cash", "Bank Transfer"];
 
@@ -35,27 +35,17 @@ export const STATUS_LABELS: Record<DayStatus, string> = {
   "Full Day": "يوم كامل",
   "Half Day": "نصف يوم",
   Holiday: "رجعت من الشغل",
+  Vacation: "يوم إجازة",
 };
 
 export const STATUS_COLORS: Record<
   DayStatus,
   { bg: string; dot: string; text: string }
 > = {
-  "Full Day": {
-    bg: "bg-sky-500",
-    dot: "bg-sky-500",
-    text: "text-sky-700",
-  },
-  "Half Day": {
-    bg: "bg-amber-400",
-    dot: "bg-amber-400",
-    text: "text-amber-700",
-  },
-  Holiday: {
-    bg: "bg-rose-300",
-    dot: "bg-rose-400",
-    text: "text-rose-700",
-  },
+  "Full Day": { bg: "bg-sky-500", dot: "bg-sky-500", text: "text-sky-700" },
+  "Half Day": { bg: "bg-amber-400", dot: "bg-amber-400", text: "text-amber-700" },
+  Holiday:   { bg: "bg-rose-300",  dot: "bg-rose-400",  text: "text-rose-700" },
+  Vacation:  { bg: "bg-violet-400",dot: "bg-violet-400",text: "text-violet-700" },
 };
 
 export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {

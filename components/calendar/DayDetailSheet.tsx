@@ -95,7 +95,12 @@ export function DayDetailSheet({ day, clientNames, onClose }: DayDetailSheetProp
     PROFESSION_LABELS[day.profession_type as keyof typeof PROFESSION_LABELS] ??
     day.profession_type;
   const earning = getDayEarning(day);
-  const colors = STATUS_COLORS[day.status];
+  const colors = STATUS_COLORS[day.status as keyof typeof STATUS_COLORS] ?? {
+    bg: "bg-slate-500",
+    dot: "bg-slate-500",
+    text: "text-slate-700",
+  };
+  const statusLabel = STATUS_LABELS[day.status as keyof typeof STATUS_LABELS] ?? day.status;
 
   return createPortal(
     <div className="fixed inset-0 z-[100] flex flex-col justify-end">
@@ -180,7 +185,7 @@ export function DayDetailSheet({ day, clientNames, onClose }: DayDetailSheetProp
               <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-3">
                 <span className="text-sm text-slate-500">الحالة</span>
                 <span className={`text-sm font-semibold ${colors.text}`}>
-                  {STATUS_LABELS[day.status]}
+                  {statusLabel}
                 </span>
               </div>
 

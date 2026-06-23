@@ -39,7 +39,7 @@ export function ClientField({
 
   return (
     <div>
-      <p className="mb-2 text-sm font-medium text-slate-700">العميل</p>
+      <p className="mb-2 text-sm font-medium text-slate-700">المقاول</p>
 
       {clientNames.length > 0 ? (
         <div className="mb-3 grid grid-cols-2 gap-2">
@@ -50,7 +50,7 @@ export function ClientField({
               !useCustomClient ? styles.active : styles.idle
             }`}
           >
-            عميل سابق
+            مقاول سابق
           </button>
           <button
             type="button"
@@ -59,7 +59,7 @@ export function ClientField({
               useCustomClient ? styles.active : styles.idle
             }`}
           >
-            عميل جديد
+            مقاول جديد
           </button>
         </div>
       ) : null}
@@ -69,7 +69,7 @@ export function ClientField({
           id={id}
           name="client_name"
           type="text"
-          placeholder="اكتب اسم العميل"
+          placeholder="اكتب اسم المقاول"
           required
           autoComplete="off"
           defaultValue={initialValue}
@@ -84,7 +84,7 @@ export function ClientField({
           className={`${inputClass} bg-white text-base`}
         >
           <option value="" disabled>
-            اختر العميل
+            اختر المقاول
           </option>
           {clientNames.map((name) => (
             <option key={name} value={name}>
