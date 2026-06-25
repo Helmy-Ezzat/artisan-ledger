@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from "react";
 import type { SharedClientData } from "@/app/actions/share";
-import { calculateTotalEarned, calculateTotalReceived, calculateRemainingBalance, getDayEarning } from "@/lib/calculations";
-import { formatCurrency, formatDateNumeric } from "@/lib/format";
+import { calculateTotalEarned, calculateTotalReceived, calculateRemainingBalance, getDayEarning, calculateTotalWorkDays } from "@/lib/calculations";
+import { formatDateNumeric } from "@/lib/format";
+import { CurrencyText } from "@/components/ui/CurrencyText";
 import { STATUS_LABELS, STATUS_COLORS, PAYMENT_METHOD_LABELS } from "@/lib/constants";
 import { CalendarDays, Coins, Receipt, ShieldCheck, ChevronDown, ChevronUp } from "lucide-react";
 import type { ArtisanDayRow, ArtisanPaymentRow } from "@/lib/database.types";
@@ -44,9 +45,11 @@ function DayMonthAccordion({ group, defaultOpen }: { group: ReturnType<typeof gr
         <div className="flex items-center gap-2">
           {open ? <ChevronUp className="h-4 w-4 text-slate-400"/> : <ChevronDown className="h-4 w-4 text-slate-400"/>}
           <span className="text-sm font-bold text-slate-700">{group.label}</span>
-          <span className="text-xs text-slate-500">({group.days.length} يوم)</span>
+          <span className="text-xs text-slate-500">({calculateTotalWorkDays(group.days)} يوم)</span>
         </div>
-        <span className="text-xs font-semibold text-sky-700 bg-sky-50 rounded-lg px-2 py-0.5">{formatCurrency(group.total)}</span>
+        <span className="text-xs bg-sky-50 rounded-lg px-2 py-0.5">
+          <CurrencyText amount={group.total} numberClass="text-sky-700 font-semibold" symbolClass="text-sky-400" />
+        </span>
       </button>
       {open && (
         <div className="max-h-64 overflow-y-auto divide-y divide-slate-100">
@@ -61,7 +64,7 @@ function DayMonthAccordion({ group, defaultOpen }: { group: ReturnType<typeof gr
                     <p className={`text-xs ${colors.text}`}>{STATUS_LABELS[day.status]}</p>
                   </div>
                 </div>
-                <p className="text-sm font-bold text-slate-900">{formatCurrency(getDayEarning(day))}</p>
+                <CurrencyText amount={getDayEarning(day)} numberClass="text-slate-900 font-bold text-sm" symbolClass="text-slate-400 text-xs" />
               </div>
             );
           })}
@@ -82,7 +85,9 @@ function PaymentMonthAccordion({ group, defaultOpen }: { group: ReturnType<typeo
           <span className="text-sm font-bold text-slate-700">{group.label}</span>
           <span className="text-xs text-slate-500">({group.payments.length} دفعة)</span>
         </div>
-        <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 rounded-lg px-2 py-0.5">{formatCurrency(group.total)}</span>
+        <span className="text-xs bg-emerald-50 rounded-lg px-2 py-0.5">
+          <CurrencyText amount={group.total} numberClass="text-emerald-700 font-semibold" symbolClass="text-emerald-400" />
+        </span>
       </button>
       {open && (
         <div className="max-h-64 overflow-y-auto divide-y divide-slate-100">
@@ -93,7 +98,7 @@ function PaymentMonthAccordion({ group, defaultOpen }: { group: ReturnType<typeo
                 {p.location && <p className="text-xs font-medium text-slate-600">📍 {p.location}</p>}
                 <p className="text-xs text-slate-500">{PAYMENT_METHOD_LABELS[p.payment_method]}</p>
               </div>
-              <p className="text-sm font-bold text-emerald-700">{formatCurrency(p.amount)}</p>
+              <CurrencyText amount={p.amount} numberClass="text-slate-900 font-bold text-sm" symbolClass="text-slate-400 text-xs" />
             </div>
           ))}
         </div>
@@ -108,8 +113,9 @@ export function SharedClientView({ data }: { data: SharedClientData }) {
   const totalEarned   = calculateTotalEarned(days);
   const totalReceived = calculateTotalReceived(payments);
   const remaining     = calculateRemainingBalance(totalEarned, totalReceived);
+  const totalWorkDays = calculateTotalWorkDays(days);
 
-  const groupedDays     = useMemo(() => groupDaysByMonth(days),     [days]);
+  const groupedDays     = useMemo(() => groupDaysByMonth(days),        [days]);
   const groupedPayments = useMemo(() => groupPaymentsByMonth(payments), [payments]);
 
   const expiryDate = new Date(expiresAt).toLocaleDateString("ar-EG", { year:"numeric", month:"long", day:"numeric" });
@@ -139,16 +145,25 @@ export function SharedClientView({ data }: { data: SharedClientData }) {
           <div className="grid grid-cols-3 gap-2">
             <div className="rounded-xl bg-sky-50 px-2 py-3 text-center">
               <p className="text-[11px] font-bold text-sky-600">المستحقات</p>
-              <p className="mt-1 text-sm font-extrabold text-slate-900">{formatCurrency(totalEarned)}</p>
+              <p className="mt-1 text-sm font-extrabold">
+                <CurrencyText amount={totalEarned} numberClass="text-slate-900 font-extrabold" symbolClass="text-slate-400" />
+              </p>
             </div>
             <div className="rounded-xl bg-emerald-50 px-2 py-3 text-center">
               <p className="text-[11px] font-bold text-emerald-600">وصلني</p>
-              <p className="mt-1 text-sm font-extrabold text-slate-900">{formatCurrency(totalReceived)}</p>
+              <p className="mt-1 text-sm font-extrabold">
+                <CurrencyText amount={totalReceived} numberClass="text-slate-900 font-extrabold" symbolClass="text-slate-400" />
+              </p>
             </div>
             <div className="rounded-xl bg-amber-50 px-2 py-3 text-center">
               <p className="text-[11px] font-bold text-amber-600">باقي</p>
-              <p className={`mt-1 text-sm font-extrabold ${remaining>0?"text-emerald-700":remaining<0?"text-rose-700":"text-slate-900"}`}>
-                {formatCurrency(Math.abs(remaining))}{remaining < 0 && " زائد"}
+              <p className="mt-1 text-sm font-extrabold">
+                <CurrencyText
+                  amount={Math.abs(remaining)}
+                  numberClass={`font-extrabold ${remaining>0?"text-emerald-700":remaining<0?"text-rose-700":"text-slate-900"}`}
+                  symbolClass="text-slate-400"
+                />
+                {remaining < 0 && <span className="text-rose-700 text-xs"> زائد</span>}
               </p>
             </div>
           </div>
@@ -158,7 +173,7 @@ export function SharedClientView({ data }: { data: SharedClientData }) {
         <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex items-center gap-2 mb-3">
             <CalendarDays className="h-5 w-5 text-sky-600"/>
-            <h2 className="text-base font-semibold text-slate-900">أيام العمل ({days.length})</h2>
+            <h2 className="text-base font-semibold text-slate-900">أيام العمل ({totalWorkDays})</h2>
           </div>
           {days.length === 0
             ? <p className="py-4 text-center text-sm text-slate-500">لا توجد أيام عمل مسجّلة.</p>

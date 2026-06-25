@@ -1,8 +1,6 @@
 import { format } from "date-fns";
 import { arSA } from "date-fns/locale";
 
-// منسق الأرقام الإنجليزية البسيط (عشان الفواصل زي 1,500)
-// بدون تقسيم عشوائي أو خصم
 const numberFormatter = new Intl.NumberFormat("en-US", {
   minimumFractionDigits: 0,
   maximumFractionDigits: 2,
@@ -13,12 +11,18 @@ function parseLocalDate(dateString: string): Date {
   return new Date(`${dateString}T12:00:00+03:00`);
 }
 
-// ١. تنسيق العملة بالأرقام الإنجليزية
+// ١. تنسيق العملة — الرقم + ريال بنفس اللون الموحد
 export function formatCurrency(amount: number): string {
-  // نضبط العدد عشان ميجيش أرقام عشوائية زي 149.96 بدل 150
   const safeAmount = isNaN(amount) || !isFinite(amount) ? 0 : amount;
   const roundedAmount = Math.round(safeAmount * 100) / 100;
   return `${numberFormatter.format(roundedAmount)} ﷼`;
+}
+
+/** نفس formatCurrency لكن يرجع الأجزاء منفصلة عشان تقدر تلوّنهم */
+export function splitCurrency(amount: number): { number: string; symbol: string } {
+  const safeAmount = isNaN(amount) || !isFinite(amount) ? 0 : amount;
+  const roundedAmount = Math.round(safeAmount * 100) / 100;
+  return { number: numberFormatter.format(roundedAmount), symbol: "﷼" };
 }
 
 // ٢. التاريخ القصير (مثل: 11 يونيو 2026)

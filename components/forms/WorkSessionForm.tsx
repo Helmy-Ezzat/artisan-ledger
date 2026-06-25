@@ -82,6 +82,8 @@ export function WorkSessionForm({
     clientNames.length === 0 || !clientNames.includes(initialData?.client_name || ""),
   );
   const [formKey, setFormKey] = useState(0);
+  const [selectedStatus, setSelectedStatus] = useState(initialData?.status || "Full Day");
+  const isVacation = selectedStatus === "Vacation";
 
   useEffect(() => {
     if (!action && state.success) {
@@ -128,9 +130,10 @@ export function WorkSessionForm({
             step="1"
             inputMode="numeric"
             placeholder="مثال: 500"
-            required
+            required={!isVacation}
+            disabled={isVacation}
             defaultValue={initialData?.daily_rate}
-            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+            className={`w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 ${isVacation ? "opacity-40 bg-slate-50" : ""}`}
           />
           <FieldError message={state.fieldErrors?.daily_rate} />
         </div>
@@ -143,7 +146,8 @@ export function WorkSessionForm({
             <select
               id="status"
               name="status"
-              defaultValue={initialData?.status || "Full Day"}
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
               required
               className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
             >
@@ -156,49 +160,55 @@ export function WorkSessionForm({
             <FieldError message={state.fieldErrors?.status} />
           </div>
 
+          {!isVacation && (
+            <div>
+              <label
+                htmlFor="profession_type"
+                className="mb-1.5 block text-sm font-medium text-slate-700"
+              >
+                المهنة
+              </label>
+              <input
+                id="profession_type"
+                name="profession_type"
+                type="text"
+                required
+                placeholder="مثال: سباك، كهربائي، دهان..."
+                defaultValue={initialData?.profession_type || ""}
+                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+              />
+              <FieldError message={state.fieldErrors?.profession_type} />
+            </div>
+          )}
+        </div>
+
+        {!isVacation && (
+          <ClientField
+            clientNames={clientNames}
+            useCustomClient={useCustomClient}
+            onModeChange={setUseCustomClient}
+            error={state.fieldErrors?.client_name}
+            accent="sky"
+            initialValue={initialData?.client_name}
+          />
+        )}
+
+        {!isVacation && (
           <div>
-            <label
-              htmlFor="profession_type"
-              className="mb-1.5 block text-sm font-medium text-slate-700"
-            >
-              المهنة
+            <label htmlFor="location" className="mb-1.5 block text-sm font-medium text-slate-700">
+              الموقع
             </label>
             <input
-              id="profession_type"
-              name="profession_type"
+              id="location"
+              name="location"
               type="text"
-              required
-              placeholder="مثال: سباك، كهربائي، دهان..."
-              defaultValue={initialData?.profession_type || ""}
-              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+              placeholder="الحي أو موقع العمل"
+              defaultValue={initialData?.location}
+              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
             />
-            <FieldError message={state.fieldErrors?.profession_type} />
+            <FieldError message={state.fieldErrors?.location} />
           </div>
-        </div>
-
-        <ClientField
-          clientNames={clientNames}
-          useCustomClient={useCustomClient}
-          onModeChange={setUseCustomClient}
-          error={state.fieldErrors?.client_name}
-          accent="sky"
-          initialValue={initialData?.client_name}
-        />
-
-        <div>
-          <label htmlFor="location" className="mb-1.5 block text-sm font-medium text-slate-700">
-            الموقع
-          </label>
-          <input
-            id="location"
-            name="location"
-            type="text"
-            placeholder="الحي أو موقع العمل"
-            defaultValue={initialData?.location}
-            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
-          />
-          <FieldError message={state.fieldErrors?.location} />
-        </div>
+        )}
 
         <div>
           <label htmlFor="notes" className="mb-1.5 block text-sm font-medium text-slate-700">

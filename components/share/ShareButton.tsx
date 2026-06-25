@@ -74,17 +74,32 @@ export function ShareButton({ clientName }: { clientName: string }) {
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2 rounded-xl border border-teal-200 bg-teal-50 px-3 py-2">
-        <p className="flex-1 truncate text-xs text-teal-800 font-mono" dir="ltr">{shareUrl}</p>
+      {/* URL display — يتكسر بشكل صح على الموبايل */}
+      <div className="rounded-xl border border-teal-200 bg-teal-50 px-3 py-2 overflow-hidden">
+        <p className="text-xs text-teal-700 mb-1 font-medium">رابط المشاركة:</p>
+        <p
+          className="text-xs text-teal-800 break-all leading-relaxed"
+          dir="ltr"
+          style={{ fontFamily: "monospace", wordBreak: "break-all" }}
+        >
+          {shareUrl}
+        </p>
       </div>
       <div className="flex gap-2">
-        <button onClick={handleCopy}
-          className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-teal-600 px-3 py-2.5 text-sm font-semibold text-white hover:bg-teal-700 active:scale-95 transition-all">
-          {copied ? <CheckCheck className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+        {/* Copy */}
+        <button
+          onClick={handleCopy}
+          className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-teal-600 px-3 py-2.5 text-sm font-semibold text-white hover:bg-teal-700 active:scale-95 transition-all"
+        >
+          {copied ? <CheckCheck className="h-4 w-4 shrink-0" /> : <Copy className="h-4 w-4 shrink-0" />}
           {copied ? "تم النسخ" : "نسخ الرابط"}
         </button>
-        <button onClick={handleRevoke} disabled={isRevoking}
-          className="flex items-center justify-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-100 active:scale-95 transition-all disabled:opacity-50">
+        {/* Revoke */}
+        <button
+          onClick={handleRevoke}
+          disabled={isRevoking}
+          className="flex items-center justify-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-100 active:scale-95 transition-all disabled:opacity-50"
+        >
           {isRevoking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
           إلغاء
         </button>

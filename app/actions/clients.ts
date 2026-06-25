@@ -220,7 +220,7 @@ export async function getClientStats(clientName: string): Promise<{
   return {
     totalEarned,
     totalReceived,
-    workDaysCount: days.length,
+    workDaysCount: days.filter(d => d.status === "Full Day" || d.status === "Half Day").length,
     paymentsCount: payments.length,
   };
 }

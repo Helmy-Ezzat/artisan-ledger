@@ -10,7 +10,8 @@ import {
   STATUS_LABELS,
 } from "@/lib/constants";
 import type { ArtisanDayRow } from "@/lib/database.types";
-import { formatCurrency, formatDateLong } from "@/lib/format";
+import { formatDateLong } from "@/lib/format";
+import { CurrencyText } from "@/components/ui/CurrencyText";
 import { X, Edit, Trash2 } from "lucide-react";
 import { WorkSessionForm } from "@/components/forms/WorkSessionForm";
 import { ConfirmDialog } from "@/components/ui/Dialog";
@@ -191,8 +192,8 @@ export function DayDetailSheet({ day, clientNames, onClose }: DayDetailSheetProp
 
               <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-3">
                 <span className="text-sm text-slate-500">الأجر</span>
-                <span className="text-sm font-bold text-slate-900">
-                  {formatCurrency(earning)}
+                <span className="text-sm font-bold">
+                  <CurrencyText amount={earning} numberClass="text-slate-900 font-bold" symbolClass="text-slate-400" />
                 </span>
               </div>
 
@@ -212,8 +213,8 @@ export function DayDetailSheet({ day, clientNames, onClose }: DayDetailSheetProp
 
               <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-3">
                 <span className="text-sm text-slate-500">الأجر اليومي</span>
-                <span className="text-sm font-semibold text-slate-900">
-                  {formatCurrency(day.daily_rate)}
+                <span className="text-sm font-semibold">
+                  <CurrencyText amount={day.daily_rate} numberClass="text-slate-900 font-semibold" symbolClass="text-slate-400" />
                 </span>
               </div>
 

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import type { ArchivedClientRow } from "@/lib/database.types";
 import { getClientStats, unarchiveClientAction } from "@/app/actions/clients";
-import { formatCurrency } from "@/lib/format";
+import { CurrencyText } from "@/components/ui/CurrencyText";
 import { Archive, ArchiveRestore, ChevronDown, ChevronUp, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ui/Dialog";
@@ -123,13 +123,13 @@ export function ArchiveClient({ client }: ArchiveClientProps) {
                 <div className="rounded-xl bg-white px-3 py-2.5 border border-slate-100">
                   <p className="text-xs text-slate-500 mb-1">المستحقات</p>
                   <p className="text-base font-bold text-sky-700">
-                    {formatCurrency(stats.totalEarned)}
+                    <CurrencyText amount={stats.totalEarned} numberClass="text-sky-700 font-bold" symbolClass="text-sky-400" />
                   </p>
                 </div>
                 <div className="rounded-xl bg-white px-3 py-2.5 border border-slate-100">
                   <p className="text-xs text-slate-500 mb-1">وصلني</p>
                   <p className="text-base font-bold text-emerald-700">
-                    {formatCurrency(stats.totalReceived)}
+                    <CurrencyText amount={stats.totalReceived} numberClass="text-emerald-700 font-bold" symbolClass="text-emerald-400" />
                   </p>
                 </div>
                 <div className="rounded-xl bg-white px-3 py-2.5 border border-slate-100">
@@ -143,8 +143,12 @@ export function ArchiveClient({ client }: ArchiveClientProps) {
                           : "text-slate-600"
                     }`}
                   >
-                    {formatCurrency(Math.abs(balance))}
-                    {balance < 0 && " زائد"}
+                    <CurrencyText
+                      amount={Math.abs(balance)}
+                      numberClass={`text-base font-bold ${balance > 0 ? "text-amber-600" : balance < 0 ? "text-rose-600" : "text-slate-600"}`}
+                      symbolClass="text-slate-400"
+                    />
+                    {balance < 0 && <span className="text-rose-600 text-sm"> زائد</span>}
                   </p>
                 </div>
                 <div className="rounded-xl bg-white px-3 py-2.5 border border-slate-100">

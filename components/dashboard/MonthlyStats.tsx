@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { formatCurrency } from "@/lib/format";
+import { CurrencyText } from "@/components/ui/CurrencyText";
 import type { ArtisanDayRow, ArtisanPaymentRow } from "@/lib/database.types";
 import { BarChart3, ChevronDown, ChevronUp } from "lucide-react";
 
@@ -47,7 +47,7 @@ function MonthAccordion({ stat, defaultOpen }: { stat: MonthStat; defaultOpen: b
           </span>
         </div>
         <span className="text-xs font-semibold text-sky-700 bg-sky-50 rounded-lg px-2 py-0.5">
-          {formatCurrency(stat.earned)}
+          <CurrencyText amount={stat.earned} numberClass="text-sky-700 font-semibold" symbolClass="text-sky-400" />
         </span>
       </button>
 
@@ -78,11 +78,11 @@ function MonthAccordion({ stat, defaultOpen }: { stat: MonthStat; defaultOpen: b
           <div className="grid grid-cols-2 gap-2">
             <div className="flex items-center justify-between rounded-lg bg-sky-50 px-2 py-1.5">
               <span className="text-sky-700 text-xs font-semibold">المستحقات</span>
-              <span className="text-sky-700 font-bold text-sm">{formatCurrency(stat.earned)}</span>
+              <span className="text-sky-700 font-bold text-sm"><CurrencyText amount={stat.earned} numberClass="text-sky-700 font-bold" symbolClass="text-sky-400" /></span>
             </div>
             <div className="flex items-center justify-between rounded-lg bg-emerald-50 px-2 py-1.5">
               <span className="text-emerald-700 text-xs font-semibold">وصلني</span>
-              <span className="text-emerald-700 font-bold text-sm">{formatCurrency(stat.received)}</span>
+              <span className="text-emerald-700 font-bold text-sm"><CurrencyText amount={stat.received} numberClass="text-emerald-700 font-bold" symbolClass="text-emerald-400" /></span>
             </div>
           </div>
         </div>

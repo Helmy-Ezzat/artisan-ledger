@@ -2,8 +2,9 @@
 
 import { useState, useMemo } from "react";
 import { Filter, CalendarDays, Receipt, ChevronDown, ChevronUp } from "lucide-react";
-import { calculateTotalEarned, calculateTotalReceived, calculateRemainingBalance, getDayEarning } from "@/lib/calculations";
-import { formatCurrency, formatDateNumeric } from "@/lib/format";
+import { calculateTotalEarned, calculateTotalReceived, calculateRemainingBalance, getDayEarning, calculateTotalWorkDays } from "@/lib/calculations";
+import { formatDateNumeric } from "@/lib/format";
+import { CurrencyText } from "@/components/ui/CurrencyText";
 import { STATUS_LABELS, STATUS_COLORS, PAYMENT_METHOD_LABELS } from "@/lib/constants";
 import type { ArtisanDayRow, ArtisanPaymentRow } from "@/lib/database.types";
 
@@ -42,9 +43,11 @@ function DayGroup({group,defaultOpen}:{group:ReturnType<typeof groupDays>[number
         <div className="flex items-center gap-2">
           {open?<ChevronUp className="h-4 w-4 text-slate-400"/>:<ChevronDown className="h-4 w-4 text-slate-400"/>}
           <span className="text-sm font-bold text-slate-700">{group.label}</span>
-          <span className="text-xs text-slate-500">({group.days.length} يوم)</span>
+          <span className="text-xs text-slate-500">({calculateTotalWorkDays(group.days)} يوم)</span>
         </div>
-        <span className="text-xs font-semibold text-sky-700 bg-sky-50 rounded-lg px-2 py-0.5">{formatCurrency(group.total)}</span>
+        <span className="text-xs bg-sky-50 rounded-lg px-2 py-0.5">
+          <CurrencyText amount={group.total} numberClass="text-sky-700 font-semibold" symbolClass="text-sky-400" />
+        </span>
       </button>
       {open && (
         <div className="divide-y divide-slate-100">
@@ -60,7 +63,7 @@ function DayGroup({group,defaultOpen}:{group:ReturnType<typeof groupDays>[number
                     <p className="text-xs text-slate-400">{day.client_name}</p>
                   </div>
                 </div>
-                <p className="text-sm font-bold text-slate-900">{formatCurrency(getDayEarning(day))}</p>
+                <CurrencyText amount={getDayEarning(day)} numberClass="text-slate-900 font-bold text-sm" symbolClass="text-slate-400 text-xs" />
               </div>
             );
           })}
@@ -80,7 +83,9 @@ function PaymentGroup({group,defaultOpen}:{group:ReturnType<typeof groupPayments
           <span className="text-sm font-bold text-slate-700">{group.label}</span>
           <span className="text-xs text-slate-500">({group.payments.length} دفعة)</span>
         </div>
-        <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 rounded-lg px-2 py-0.5">{formatCurrency(group.total)}</span>
+        <span className="text-xs bg-emerald-50 rounded-lg px-2 py-0.5">
+          <CurrencyText amount={group.total} numberClass="text-emerald-700 font-semibold" symbolClass="text-emerald-400" />
+        </span>
       </button>
       {open && (
         <div className="divide-y divide-slate-100">
@@ -92,7 +97,7 @@ function PaymentGroup({group,defaultOpen}:{group:ReturnType<typeof groupPayments
                 {p.location && <p className="text-xs text-slate-500">📍 {p.location}</p>}
                 <p className="text-xs text-slate-500">{PAYMENT_METHOD_LABELS[p.payment_method]}</p>
               </div>
-              <p className="text-sm font-bold text-emerald-700">{formatCurrency(p.amount)}</p>
+              <CurrencyText amount={p.amount} numberClass="text-slate-900 font-bold text-sm" symbolClass="text-slate-400 text-xs" />
             </div>
           ))}
         </div>
@@ -124,12 +129,15 @@ export function ReportsClient({ initialWorkDays, initialPayments, clientNames }:
   const totalEarned = calculateTotalEarned(filteredWorkDays);
   const totalReceived = calculateTotalReceived(filteredPayments);
   const remainingBalance = calculateRemainingBalance(totalEarned,totalReceived);
+  const totalWorkDays = calculateTotalWorkDays(filteredWorkDays);
+
   const groupedDays = useMemo(()=>groupDays(filteredWorkDays),[filteredWorkDays]);
   const groupedPayments = useMemo(()=>groupPayments(filteredPayments),[filteredPayments]);
   const hasFilters = !!(selectedClient||selectedStatus||startDate||endDate);
 
   return (
     <div className="space-y-4">
+      {/* Filters */}
       <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-4">
         <div className="flex items-center gap-2">
           <Filter className="h-5 w-5 text-slate-700"/>
@@ -172,34 +180,45 @@ export function ReportsClient({ initialWorkDays, initialPayments, clientNames }:
         </button>
       </section>
 
+      {/* Summary */}
       {hasFilters && (
         <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <h3 className="font-semibold text-slate-900 mb-3">نتائج التصفية</h3>
           <div className="grid grid-cols-3 gap-2 mb-2">
             <div className="rounded-xl bg-sky-50 px-2 py-3 text-center">
               <p className="text-[11px] font-bold text-sky-600">المستحقات</p>
-              <p className="mt-1 text-sm font-extrabold text-slate-900">{formatCurrency(totalEarned)}</p>
+              <p className="mt-1 text-sm font-extrabold">
+                <CurrencyText amount={totalEarned} numberClass="text-slate-900 font-extrabold" symbolClass="text-slate-400" />
+              </p>
             </div>
             <div className="rounded-xl bg-emerald-50 px-2 py-3 text-center">
               <p className="text-[11px] font-bold text-emerald-600">وصلني</p>
-              <p className="mt-1 text-sm font-extrabold text-slate-900">{formatCurrency(totalReceived)}</p>
+              <p className="mt-1 text-sm font-extrabold">
+                <CurrencyText amount={totalReceived} numberClass="text-slate-900 font-extrabold" symbolClass="text-slate-400" />
+              </p>
             </div>
             <div className="rounded-xl bg-amber-50 px-2 py-3 text-center">
               <p className="text-[11px] font-bold text-amber-600">باقي</p>
-              <p className={`mt-1 text-sm font-extrabold ${remainingBalance>0?"text-emerald-700":remainingBalance<0?"text-rose-700":"text-slate-900"}`}>
-                {formatCurrency(Math.abs(remainingBalance))}
+              <p className="mt-1 text-sm font-extrabold">
+                <CurrencyText
+                  amount={Math.abs(remainingBalance)}
+                  numberClass={`font-extrabold ${remainingBalance>0?"text-emerald-700":remainingBalance<0?"text-rose-700":"text-slate-900"}`}
+                  symbolClass="text-slate-400"
+                />
               </p>
             </div>
           </div>
-          <p className="text-xs text-slate-500 text-center">{filteredWorkDays.length} يوم عمل · {filteredPayments.length} دفعة</p>
+          {/* العداد الصح: calculateTotalWorkDays يحسب Full=1, Half=0.5 */}
+          <p className="text-xs text-slate-500 text-center">{totalWorkDays} يوم عمل · {filteredPayments.length} دفعة</p>
         </section>
       )}
 
+      {/* أيام العمل */}
       {filteredWorkDays.length>0 && (
         <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex items-center gap-2 mb-3">
             <CalendarDays className="h-5 w-5 text-sky-600"/>
-            <h3 className="font-semibold text-slate-900">أيام العمل ({filteredWorkDays.length})</h3>
+            <h3 className="font-semibold text-slate-900">أيام العمل ({totalWorkDays})</h3>
           </div>
           <div className="space-y-2">
             {groupedDays.map((g,i)=><DayGroup key={g.key} group={g} defaultOpen={i===0}/>)}
@@ -207,6 +226,7 @@ export function ReportsClient({ initialWorkDays, initialPayments, clientNames }:
         </section>
       )}
 
+      {/* المدفوعات */}
       {filteredPayments.length>0 && (
         <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex items-center gap-2 mb-3">
