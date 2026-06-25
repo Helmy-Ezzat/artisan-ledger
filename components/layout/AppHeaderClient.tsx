@@ -16,14 +16,14 @@ interface AppHeaderClientProps {
 }
 
 export function AppHeaderClient({ title, subtitle, user }: AppHeaderClientProps) {
-  const { onSidebarOpen } = useSidebar();
+  const sidebar = useSidebar();
 
   return (
     <AppHeader
       title={title}
       subtitle={subtitle}
       user={user}
-      onSidebarOpen={onSidebarOpen}
+      onSidebarOpen={sidebar?.onSidebarOpen ?? (() => {})}
     />
   );
 }
